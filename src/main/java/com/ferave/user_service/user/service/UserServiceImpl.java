@@ -6,23 +6,29 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.ferave.user_service.exceptions.AlreadyExistsException;
+import com.ferave.user_service.exceptions.NotFoundException;
 import com.ferave.user_service.user.dto.UserRequestDto;
 import com.ferave.user_service.user.dto.UserResponseDto;
+import com.ferave.user_service.user.dto.UserUpdateDto;
 import com.ferave.user_service.user.entity.User;
 import com.ferave.user_service.user.mapper.UserMapper;
 import com.ferave.user_service.user.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
 
-@AllArgsConstructor 
 @Service 
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
+
     @Override
-    public UserResponseDto saveUser(UserRequestDto userRequestDto) {
+    public UserResponseDto savedUser(UserRequestDto userRequestDto) {
         Optional<User> findByEmail = userRepository.findByEmail(userRequestDto.email());
         findByEmail.ifPresent(e -> {
             throw new AlreadyExistsException("Already " + userRequestDto.email() + " exists");
@@ -33,27 +39,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponseDto> findAllUsers() {
+    public List<UserResponseDto> users() {
         List<User> findUsers = userRepository.findAll();
         return userMapper.toListDto(findUsers);
     }
 
     @Override
     public Optional<UserResponseDto> findUserById(Long id) {
-
-        throw new UnsupportedOperationException("Unimplemented method 'findUserById'");
+       return userRepository.findById(id).map(userMapper::toDto);
     }
 
     @Override
-    public UserResponseDto updateUser(UserRequestDto userRequestDto, Long id) {
+    public UserResponseDto updatedUser(UserUpdateDto userUpdateDto, Long id) {
+        User existingUser = userRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
 
-        throw new UnsupportedOperationException("Unimplemented method 'updateUser'");
+        userMapper.updateUser(userUpdateDto, existingUser);
+
+        User updateUser = userRepository.save(existingUser);
+
+        return userMapper.toDto(updateUser);
     }
 
     @Override
-    public void deleteById(Long id) {
-        
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+    public void deleteUserById(Long id) {
+        User exitsingUser = userRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+        userRepository.delete(exitsingUser);
     }
     
 }

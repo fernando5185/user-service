@@ -24,13 +24,13 @@ public class UserController {
 
     @PostMapping 
     public ResponseEntity<UserResponseDto> saveUser(@RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto userResponseDto = userService.saveUser(userRequestDto);
+        UserResponseDto userResponseDto = userService.savedUser(userRequestDto);
         return ResponseEntity.ok().body(userResponseDto);
     }
 
     @GetMapping("/entities")
     public ResponseEntity<List<UserResponseDto>> findAllUsers(){
-        List<UserResponseDto> findAll = userService.findAllUsers();
+        List<UserResponseDto> findAll = userService.users();
         return ResponseEntity.ok().body(findAll);
     }
 }

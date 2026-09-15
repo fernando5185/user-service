@@ -5,13 +5,14 @@ import java.util.Optional;
 
 import com.ferave.user_service.user.dto.UserRequestDto;
 import com.ferave.user_service.user.dto.UserResponseDto;
+import com.ferave.user_service.user.dto.UserUpdateDto;
 
 public interface UserService {
 
-    UserResponseDto saveUser(UserRequestDto userRequestDto);
-    List<UserResponseDto> findAllUsers();
+    UserResponseDto savedUser(UserRequestDto userRequestDto);
+    List<UserResponseDto> users();
     Optional<UserResponseDto> findUserById(Long id);
-    UserResponseDto updateUser(UserRequestDto userRequestDto, Long id);
-    void deleteById(Long id);
+    UserResponseDto updatedUser(UserUpdateDto userUpdateDto, Long id);
+    void deleteUserById(Long id);
 
 }
