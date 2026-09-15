@@ -14,8 +14,6 @@ import com.ferave.user_service.user.entity.User;
 import com.ferave.user_service.user.mapper.UserMapper;
 import com.ferave.user_service.user.repository.UserRepository;
 
-import lombok.AllArgsConstructor;
-
 @Service 
 public class UserServiceImpl implements UserService {
 
