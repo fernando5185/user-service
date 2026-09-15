@@ -1,4 +1,4 @@
-package com.ferave.user_service.user.controller;
+package com.ferave.userservice.user.controller;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ferave.user_service.user.dto.UserRequestDto;
-import com.ferave.user_service.user.dto.UserResponseDto;
-import com.ferave.user_service.user.dto.UserUpdateDto;
-import com.ferave.user_service.user.service.UserService;
+import com.ferave.userservice.user.dto.UserRequestDto;
+import com.ferave.userservice.user.dto.UserResponseDto;
+import com.ferave.userservice.user.dto.UserUpdateDto;
+import com.ferave.userservice.user.service.UserService;
 
 import lombok.AllArgsConstructor;
 
@@ -40,19 +40,19 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<UserResponseDto>> findUserById(@PathVariable Long id) {
+    public ResponseEntity<Optional<UserResponseDto>> findUserById(@PathVariable(name = "id") Long id) {
         Optional<UserResponseDto> findById = userService.findUserById(id);
         return ResponseEntity.ok().body(findById);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@RequestBody  UserUpdateDto userUpdateDto, @PathVariable Long id) {
+    public ResponseEntity<UserResponseDto> updateUser(@RequestBody  UserUpdateDto userUpdateDto, @PathVariable(name = "id") Long id) {
         UserResponseDto update = userService.updatedUser(userUpdateDto, id);
         return ResponseEntity.ok().body(update);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }

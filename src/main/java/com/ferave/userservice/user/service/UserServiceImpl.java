@@ -1,18 +1,19 @@
-package com.ferave.user_service.user.service;
+package com.ferave.userservice.user.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.ferave.user_service.exceptions.AlreadyExistsException;
-import com.ferave.user_service.exceptions.NotFoundException;
-import com.ferave.user_service.user.dto.UserRequestDto;
-import com.ferave.user_service.user.dto.UserResponseDto;
-import com.ferave.user_service.user.dto.UserUpdateDto;
-import com.ferave.user_service.user.entity.User;
-import com.ferave.user_service.user.mapper.UserMapper;
-import com.ferave.user_service.user.repository.UserRepository;
+import com.ferave.userservice.exceptions.AlreadyExistsException;
+import com.ferave.userservice.exceptions.NotFoundException;
+import com.ferave.userservice.user.dto.UserRequestDto;
+import com.ferave.userservice.user.dto.UserResponseDto;
+import com.ferave.userservice.user.dto.UserUpdateDto;
+import com.ferave.userservice.user.entity.User;
+import com.ferave.userservice.user.mapper.UserMapper;
+import com.ferave.userservice.user.repository.UserRepository;
+
 
 @Service 
 public class UserServiceImpl implements UserService {

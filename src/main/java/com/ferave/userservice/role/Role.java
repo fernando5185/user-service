@@ -1,4 +1,4 @@
-package com.ferave.user_service.role;
+package com.ferave.userservice.role;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

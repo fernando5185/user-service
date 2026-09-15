@@ -1,3 +1,3 @@
-package com.ferave.user_service.user.dto;
+package com.ferave.userservice.user.dto;
 
 public record UserUpdateDto(String userName, String email, Boolean enabled) {}

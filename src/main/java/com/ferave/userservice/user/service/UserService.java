@@ -1,11 +1,11 @@
-package com.ferave.user_service.user.service;
+package com.ferave.userservice.user.service;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.ferave.user_service.user.dto.UserRequestDto;
-import com.ferave.user_service.user.dto.UserResponseDto;
-import com.ferave.user_service.user.dto.UserUpdateDto;
+import com.ferave.userservice.user.dto.UserRequestDto;
+import com.ferave.userservice.user.dto.UserResponseDto;
+import com.ferave.userservice.user.dto.UserUpdateDto;
 
 public interface UserService {
 

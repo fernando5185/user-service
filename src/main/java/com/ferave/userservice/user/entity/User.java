@@ -1,9 +1,9 @@
-package com.ferave.user_service.user.entity;
+package com.ferave.userservice.user.entity;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.ferave.user_service.role.Role;
+import com.ferave.userservice.role.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

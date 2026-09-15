@@ -1,4 +1,4 @@
-package com.ferave.user_service.exceptions;
+package com.ferave.userservice.exceptions;
 
 public class NotFoundException extends RuntimeException {
 
