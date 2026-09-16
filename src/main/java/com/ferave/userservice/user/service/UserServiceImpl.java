@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> users() {
         List<User> findUsers = userRepository.findAll();
-        return userMapper.toListDto(findUsers);
+        return userMapper.toDtoList(findUsers);
     }
 
     @Override
