@@ -6,7 +6,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
 
 import com.ferave.userservice.user.dto.UserRequestDto;
 import com.ferave.userservice.user.dto.UserResponseDto;
@@ -14,8 +13,7 @@ import com.ferave.userservice.user.dto.UserUpdateDto;
 import com.ferave.userservice.user.entity.User;
 
 @Mapper(componentModel = "spring", 
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-    unmappedSourcePolicy = ReportingPolicy.WARN
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
 ) 
 public interface UserMapper {
 
