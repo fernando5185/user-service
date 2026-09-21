@@ -1,3 +1,6 @@
+server: 
+  port: 8081
+
 spring:
   application:
     name: user-service
@@ -14,6 +17,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-server: 
-  port: 8080
+  
+  spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/mi-realm
