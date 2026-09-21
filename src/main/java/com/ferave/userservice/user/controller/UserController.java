@@ -18,14 +18,15 @@ import com.ferave.userservice.user.dto.UserResponseDto;
 import com.ferave.userservice.user.dto.UserUpdateDto;
 import com.ferave.userservice.user.service.UserService;
 
-import lombok.AllArgsConstructor;
-
 @RestController 
 @RequestMapping (path = "api/v1/user")
-@AllArgsConstructor 
 public class UserController {
     
     private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping 
     public ResponseEntity<UserResponseDto> saveUser(@RequestBody UserRequestDto userRequestDto) {

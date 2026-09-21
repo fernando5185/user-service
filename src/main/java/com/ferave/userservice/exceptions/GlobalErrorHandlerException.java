@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
@@ -26,6 +27,22 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             errors.put(fieldName, errorMessage);
         });
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    public ProblemDetail handleException (Exception exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setStatus(404);
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setProperty("Timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    public ProblemDetail handleHttpMediaTypeNotSupported (HttpMediaTypeNotSupportedException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setStatus(404);
+        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setProperty("Timestamp", Instant.now());
+        return problemDetail;
     }
     
     public ProblemDetail alreadyExistsException (AlreadyExistsException exception) {
