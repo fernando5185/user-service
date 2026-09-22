@@ -19,8 +19,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   
   spring:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/mi-realm
+    security:
+      oauth2:
+        resourceserver:
+          jwt:
+            issuer-uri: http://localhost:8080/realms/mi-realm
