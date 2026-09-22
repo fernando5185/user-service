@@ -8,4 +8,5 @@ import com.ferave.userservice.user.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
+    User findByUserName(String userName);
 }

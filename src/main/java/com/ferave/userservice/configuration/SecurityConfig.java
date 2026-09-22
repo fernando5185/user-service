@@ -2,7 +2,6 @@ package com.ferave.userservice.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -30,9 +29,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             .authorizeHttpRequests((authorize) -> authorize
-                    .requestMatchers(HttpMethod.GET, "/api/v1/user/entities").authenticated()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/user").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/user/").authenticated()
+                    .requestMatchers("/public/**")
+                    .permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(session -> session 
@@ -40,7 +38,7 @@ public class SecurityConfig {
             )
             .cors(s -> s.disable())
             .csrf(s -> s.disable())
-            .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()));
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return httpSecurity.build();
     }
 
