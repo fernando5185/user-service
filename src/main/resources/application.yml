@@ -23,4 +23,4 @@ spring:
       oauth2:
         resourceserver:
           jwt:
-            issuer-uri: http://localhost:8080/realms/mi-realm
+            issuer-uri: http://keycloak:8080/realms/mi-realm

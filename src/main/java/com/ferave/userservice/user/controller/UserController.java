@@ -1,9 +1,12 @@
 package com.ferave.userservice.user.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,6 +29,15 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping ("/perfil")
+    public Map<String, Object> perfil(@AuthenticationPrincipal Jwt jwt) {
+        return Map.of(
+            "userName", jwt.getClaim("preferred_username"),
+            "email", jwt.getClaim("email"),
+            "roles", jwt.getClaimAsStringList("roles")
+        );
     }
 
     @PostMapping 
