@@ -22,7 +22,7 @@ import com.ferave.userservice.user.dto.UserUpdateDto;
 import com.ferave.userservice.user.service.UserService;
 
 @RestController 
-@RequestMapping (path = "api/v1/user")
+@RequestMapping (path = "/api/v1/user")
 public class UserController {
     
     private final UserService userService;
