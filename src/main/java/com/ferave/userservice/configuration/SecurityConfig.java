@@ -2,7 +2,6 @@ package com.ferave.userservice.configuration;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -17,7 +16,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration 
@@ -50,35 +48,36 @@ public class SecurityConfig {
         ).build();
     }
 
+    @SuppressWarnings("null")
     @Bean
-public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
 
-    JwtAuthenticationConverter jwtConverter =
-            new JwtAuthenticationConverter();
+        JwtAuthenticationConverter jwtConverter =
+                new JwtAuthenticationConverter();
 
-    jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+        jwtConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
 
-        Map<String, Object> realmAccess =
-                jwt.getClaimAsMap("realm_access");
+            Map<String, Object> realmAccess =
+                    jwt.getClaimAsMap("realm_access");
 
-        if (realmAccess == null) {
-            return Collections.emptyList();
-        }
+            if (realmAccess == null) {
+                return Collections.emptyList();
+            }
 
-        Object rolesObject = realmAccess.get("roles");
+            Object rolesObject = realmAccess.get("roles");
 
-        if (!(rolesObject instanceof Collection<?> roles)) {
-            return Collections.emptyList();
-        }
+            if (!(rolesObject instanceof Collection<?> roles)) {
+                return Collections.emptyList();
+            }
 
-        return roles.stream()
-                .map(Object::toString)
-                .map(role -> (GrantedAuthority)
-                        new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
-    });
+            return roles.stream()
+                    .map(Object::toString)
+                    .map(role -> (GrantedAuthority)
+                            new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
+        });
 
-    return jwtConverter;
-}
+        return jwtConverter;
+    }
 
 }
