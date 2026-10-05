@@ -22,13 +22,18 @@ import com.ferave.userservice.service.UserService;
 import jakarta.validation.Valid;
 
 @RestController 
-@RequestMapping (path = "/api/v1/users")
+@RequestMapping (path = "/api/v1/users/")
 public class UserController {
     
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping("/public")
+    public String sayHello(String name) {
+        return "Say Hello "+ name;
     }
 
     @PostMapping

@@ -31,24 +31,24 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
-                .requestMatchers("/public/**")
+                .requestMatchers("/api/v1/users/public")
                     .permitAll()
 
                 .requestMatchers(
                     HttpMethod.GET,
-                    "/api/v1/user/entities"
+                    "/api/v1/users"
                 )
                     .hasAnyRole("USER", "ADMIN")
 
                 .requestMatchers(
                     HttpMethod.GET,
-                    "/api/v1/user/**"
+                    "/api/v1/users/**"
                 )
                     .hasAnyRole("USER", "ADMIN")
 
                 .requestMatchers(
                     HttpMethod.POST,
-                    "/api/v1/user"
+                    "/api/v1/users"
                 )
                     .hasRole("ADMIN")
 
