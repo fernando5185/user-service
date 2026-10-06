@@ -65,7 +65,7 @@ public class SecurityConfig {
                     .hasRole("ADMIN")
 
                 .anyRequest()
-                    .permitAll()
+                    .authenticated()
             )
 
             .oauth2ResourceServer(oauth2 ->
