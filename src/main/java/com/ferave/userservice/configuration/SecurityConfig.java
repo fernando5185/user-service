@@ -54,18 +54,18 @@ public class SecurityConfig {
 
                 .requestMatchers(
                     HttpMethod.PATCH,
-                    "/api/v1/user/**"
+                    "/api/v1/users/**"
                 )
                     .hasRole("ADMIN")
 
                 .requestMatchers(
                     HttpMethod.DELETE,
-                    "/api/v1/user/**"
+                    "/api/v1/users/**"
                 )
                     .hasRole("ADMIN")
 
                 .anyRequest()
-                    .authenticated()
+                    .permitAll()
             )
 
             .oauth2ResourceServer(oauth2 ->

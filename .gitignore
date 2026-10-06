@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Automatizar ###
+temp.json
+test_api.zsh
+validate_response.py

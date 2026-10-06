@@ -10,14 +10,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-public class KeycloakJwtAuthenticationConverter
-        implements Converter<Jwt, AbstractAuthenticationToken> {
+public class KeycloakJwtAuthenticationConverter 
+    implements Converter<Jwt, AbstractAuthenticationToken> {
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
 
         Map<String, Object> realmAccess =
-                jwt.getClaimAsMap("realm_access");
+                jwt.getClaim("realm_access");
 
         Collection<SimpleGrantedAuthority> authorities =
                 Collections.emptyList();
@@ -30,7 +30,7 @@ public class KeycloakJwtAuthenticationConverter
 
                 authorities = roleCollection.stream()
                         .map(Object::toString)
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                         .toList();
             }
         }

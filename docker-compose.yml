@@ -9,13 +9,13 @@ services:
       - postgres
       - keycloak
     extra_hosts:
-      - "localhost:host-gateway"
+      - "keycloak.local:host-gateway"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/user_service
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: admin
 
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://localhost:8080/realms/mi-realm
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak.local:8080/realms/mi-realm
 
   postgres:
     image: postgres:15-alpine
@@ -40,12 +40,18 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
       KC_DB_USERNAME: postgres
       KC_DB_PASSWORD: admin
+
+      KC_HOSTNAME: keycloak.local
+      KC_HOSTNAME_STRICT: "false"
+
     command:
       - start-dev
+
     restart: always
 
 volumes:
