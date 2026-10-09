@@ -36,3 +36,5 @@ build/
 temp.json
 test_api.zsh
 validate_response.py
+keycloak-login.zsh
+.env

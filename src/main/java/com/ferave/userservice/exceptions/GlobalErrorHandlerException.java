@@ -8,12 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingPathVariableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @RestControllerAdvice 
@@ -29,59 +26,34 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return ResponseEntity.badRequest().body(errors);
     }
 
-    public ProblemDetail handleException (Exception exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
+    @ExceptionHandler (ResourceNotFoundException.class)
+    public ResponseEntity<ProblemDetail> resourceNotFound(ResourceNotFoundException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.NOT_FOUND, 
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("Recurso no encontrado");
         problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
+
+        return ResponseEntity.
+                status(HttpStatus.NOT_FOUND)
+                .body(null);
     }
 
-    public ProblemDetail handleHttpMediaTypeNotSupported (HttpMediaTypeNotSupportedException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
-        problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
-    }
-    
-    public ProblemDetail alreadyExistsException (AlreadyExistsException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
-        problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
-    }
+    @ExceptionHandler (AlreadyExistsException.class)
+    public ResponseEntity<ProblemDetail> alreadyExistsException(AlreadyExistsException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, 
+            exception.getMessage()
+        );
 
-    public ProblemDetail notFoundException (NotFoundException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
+        problemDetail.setTitle("Recurso ya existe");
         problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
-    }
 
-    public ProblemDetail handleHttpRequestMethodNotSupported (HttpRequestMethodNotSupportedException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.METHOD_NOT_ALLOWED);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
-        problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
-    }
+        return ResponseEntity.
+                status(HttpStatus.BAD_REQUEST)
+                .body(null);
 
-    public ProblemDetail handleMissingPathVariable (MissingPathVariableException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
-        problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
-    }
-
-    public ProblemDetail handleNoHandlerFoundException (NoHandlerFoundException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setStatus(404);
-        problemDetail.setDetail(exception.getMessage());
-        problemDetail.setProperty("Timestamp", Instant.now());
-        return problemDetail;
     }
 }

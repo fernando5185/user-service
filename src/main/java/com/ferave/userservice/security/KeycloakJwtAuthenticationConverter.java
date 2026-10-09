@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 public class KeycloakJwtAuthenticationConverter 
     implements Converter<Jwt, AbstractAuthenticationToken> {
 
+    @SuppressWarnings("null")
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
 

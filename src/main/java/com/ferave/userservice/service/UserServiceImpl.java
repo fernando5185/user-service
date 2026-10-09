@@ -10,7 +10,7 @@ import com.ferave.userservice.dto.UserResponseDto;
 import com.ferave.userservice.dto.UserUpdateDto;
 import com.ferave.userservice.entity.User;
 import com.ferave.userservice.exceptions.AlreadyExistsException;
-import com.ferave.userservice.exceptions.NotFoundException;
+import com.ferave.userservice.exceptions.ResourceNotFoundException;
 import com.ferave.userservice.mapper.UserMapper;
 import com.ferave.userservice.repository.UserRepository;
 
@@ -50,14 +50,14 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto findUserById(Long id) {
        return userRepository.findById(id).map(userMapper::toDto)
             .orElseThrow(() -> 
-                new NotFoundException("User with id "+ id + " not found")
+                new ResourceNotFoundException("User with id "+ id + " not found")
             );
     }
 
     @Override
     public UserResponseDto updateUser(UserUpdateDto userUpdateDto, Long id) {
         User existingUser = userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
 
         userMapper.updateUser(userUpdateDto, existingUser);
 
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(Long id) {
         User exitsingUser = userRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
         userRepository.delete(exitsingUser);
     }
     

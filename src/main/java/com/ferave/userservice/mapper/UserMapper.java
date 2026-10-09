@@ -45,6 +45,7 @@ public interface UserMapper {
     @Mapping(target = "keycloakId", ignore = true)
     void updateUser(UserUpdateDto updateDto, @MappingTarget User entity);
 
+    @SuppressWarnings("null")
     default Set<String> mapRoles(Set<Role> roles) {
         if (roles == null) {
             return Set.of();
