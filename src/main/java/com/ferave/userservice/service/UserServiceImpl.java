@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto saveUser(UserRequestDto userRequestDto) {
         Optional<User> findByEmail = userRepository.findByEmail(userRequestDto.email());
+
         findByEmail.ifPresent(e -> {
             throw new AlreadyExistsException("Already " + userRequestDto.email() + " exists");
         });
@@ -43,7 +44,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> users() {
         List<User> findUsers = userRepository.findAll();
-        return userMapper.toDtoList(findUsers);
+        return userMapper
+            .toDtoList(findUsers);
     }
 
     @Override
@@ -70,7 +72,8 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(Long id) {
         User exitsingUser = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
-        userRepository.delete(exitsingUser);
+        userRepository
+            .delete(exitsingUser);
     }
     
 }

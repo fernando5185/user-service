@@ -20,20 +20,17 @@ import com.ferave.userservice.dto.UserUpdateDto;
 import com.ferave.userservice.service.UserService;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController 
 @RequestMapping (path = "/api/v1/users/")
+@Slf4j
 public class UserController {
     
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    @GetMapping("/public")
-    public String sayHello(String name) {
-        return "Say Hello "+ name;
     }
 
     @PostMapping
@@ -55,20 +52,26 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize ("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<UserResponseDto> findUserById(@PathVariable(name = "id") Long id) {
-        return ResponseEntity.ok(userService.findUserById(id));
+        return ResponseEntity.
+            ok(userService
+                .findUserById(id));
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> updateUser(@Valid @RequestBody  UserUpdateDto userUpdateDto, @PathVariable(name = "id") Long id) {
         UserResponseDto update = userService.updateUser(userUpdateDto, id);
-        return ResponseEntity.ok().body(update);
+        return ResponseEntity
+            .ok()
+            .body(update);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long id) {
         userService.deleteUserById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity
+            .noContent()
+            .build();
     }
 }
