@@ -1,14 +1,20 @@
 package com.ferave.userservice.exceptions;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hibernate.TypeMismatchException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,7 +48,7 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Recurso no encontrado");
+        problemDetail.setTitle("Resource not found");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
@@ -50,18 +56,18 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                 .body(problemDetail);
     }
 
-    @ExceptionHandler (AlreadyExistsException.class)
-    public ResponseEntity<ProblemDetail> alreadyExistsException(AlreadyExistsException exception) {
+    @ExceptionHandler (EmailAlreadyExistsException.class)
+    public ResponseEntity<ProblemDetail> alreadyExistsException(EmailAlreadyExistsException exception) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.BAD_REQUEST, 
+            HttpStatus.CONFLICT, 
             exception.getMessage()
         );
 
-        problemDetail.setTitle(exception.getMessage());
+        problemDetail.setTitle("The email is already registered");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
-                status(HttpStatus.BAD_REQUEST)
+                status(HttpStatus.CONFLICT)
                 .body(problemDetail);
 
     }
@@ -73,7 +79,7 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Json invalido o cuerpo de petición ilegible");
+        problemDetail.setTitle("Invalid JSON or unreadable request body");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
@@ -88,7 +94,7 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Metodo Http no permitido");
+        problemDetail.setTitle("Method Not Supported");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
@@ -103,7 +109,7 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Metodo Http no permitido");
+        problemDetail.setTitle("Missing parameter " + exception.getParameterName());
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
@@ -118,7 +124,7 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Tipo de contenido no soportado");
+        problemDetail.setTitle("Unsupported content type");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
@@ -133,11 +139,101 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Tipo de contenido no soportado");
+        problemDetail.setTitle("Parameter is missing");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
                 status(HttpStatus.BAD_REQUEST)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler (TypeMismatchException.class)
+    protected ResponseEntity<ProblemDetail> handleMethodArgumentTypeMismatchException (TypeMismatchException exception) {
+         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNSUPPORTED_MEDIA_TYPE, 
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("A parameter has the wrong type");
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return ResponseEntity.
+                status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler (HttpMediaTypeNotAcceptableException.class)
+    protected ResponseEntity<ProblemDetail> handleHttpMediaTypeNotAcceptableException (HttpMediaTypeNotAcceptableException exception) {
+         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.CONFLICT, 
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("An acceptable response for the client can't be produced.");
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return ResponseEntity.
+                status(HttpStatus.CONFLICT)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler (AuthenticationException.class)
+    protected ResponseEntity<ProblemDetail> handleAuthenticationException (AuthenticationException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNAUTHORIZED,
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("The user is not authenticated or the credentials are not valid");
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler (AccessDeniedException.class)
+    protected ResponseEntity<ProblemDetail> handleAccessDeniedException (AccessDeniedException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.FORBIDDEN,
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("The authenticated user doesn't have enough permissions");
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler (InvalidBearerTokenException.class)
+    protected ResponseEntity<ProblemDetail> handleInvalidBearerTokenException (InvalidBearerTokenException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.FORBIDDEN,
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("The Bearer token is not valid");
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(problemDetail);
+    }
+
+    @ExceptionHandler (InsufficientAuthenticationException.class)
+    protected ResponseEntity<ProblemDetail> handleInsufficientAuthenticationException (InsufficientAuthenticationException exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.UNAUTHORIZED,
+            exception.getMessage()
+        );
+
+        problemDetail.setTitle("Authentication is insufficient to access the resource");
+        problemDetail.setProperty("Timestamp", Instant.now());
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(problemDetail);
     }
 }
