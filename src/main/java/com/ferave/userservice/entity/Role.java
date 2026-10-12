@@ -3,6 +3,7 @@ package com.ferave.userservice.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +27,7 @@ public class Role {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column (nullable = false, unique = true)
     private String name;
 
     @ManyToMany (mappedBy = "roles")

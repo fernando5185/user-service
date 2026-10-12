@@ -37,7 +37,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private Boolean enabled = true;
+    private boolean enabled = true;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
