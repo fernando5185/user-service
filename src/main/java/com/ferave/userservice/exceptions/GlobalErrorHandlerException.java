@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.hibernate.TypeMismatchException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +33,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j 
 public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler (MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
         Map<String, String> errors = new HashMap<>();
-            ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.badRequest().body(errors);
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "One or more validation errors occurred"
+        );
+
+        problemDetail.setTitle("Validation failed");
+        problemDetail.setProperty("Timestamp", Instant.now());
+        problemDetail.setProperty("Errors", errors);
+
+        return ResponseEntity.badRequest().body(problemDetail);
     }
 
     @ExceptionHandler (ResourceNotFoundException.class)
@@ -59,36 +76,46 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
     @ExceptionHandler (EmailAlreadyExistsException.class)
     public ResponseEntity<ProblemDetail> alreadyExistsException(EmailAlreadyExistsException exception) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-            HttpStatus.CONFLICT, 
-            exception.getMessage()
-        );
-
-        problemDetail.setTitle("The email is already registered");
-        problemDetail.setProperty("Timestamp", Instant.now());
-
-        return ResponseEntity.
-                status(HttpStatus.CONFLICT)
-                .body(problemDetail);
-
-    }
-
-    @ExceptionHandler (HttpMessageNotReadableException.class)
-    protected ResponseEntity<ProblemDetail> handleHttpMessageNotReadable(HttpMessageNotReadableException exception) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST, 
             exception.getMessage()
         );
 
-        problemDetail.setTitle("Invalid JSON or unreadable request body");
+        problemDetail.setTitle("Already resource exists");
         problemDetail.setProperty("Timestamp", Instant.now());
 
         return ResponseEntity.
                 status(HttpStatus.BAD_REQUEST)
                 .body(problemDetail);
+
     }
 
-    @ExceptionHandler (HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<ProblemDetail> handleHttpRequestMethodNotSupport(HttpRequestMethodNotSupportedException exception) {
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+            HttpStatus.BAD_REQUEST, 
+            exception.getMessage()
+        );
+        
+        
+        problemDetail.setTitle("Invalid JSON or unreadable request body");
+        problemDetail.setProperty("Timestamp", Instant.now());
+    
+
+        return ResponseEntity.badRequest().body(problemDetail);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.METHOD_NOT_ALLOWED, 
             exception.getMessage()
@@ -102,8 +129,13 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                 .body(problemDetail);
     }
 
-    @ExceptionHandler (MissingServletRequestParameterException.class)
-    protected ResponseEntity<ProblemDetail> handleMissingServletRequestParameterException(MissingServletRequestParameterException exception) {
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST, 
             exception.getMessage()
@@ -117,8 +149,13 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                 .body(problemDetail);
     }
 
-    @ExceptionHandler (HttpMediaTypeNotSupportedException.class)
-    protected ResponseEntity<ProblemDetail> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException exception) {
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
+            HttpMediaTypeNotSupportedException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.UNSUPPORTED_MEDIA_TYPE, 
             exception.getMessage()
@@ -132,8 +169,13 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                 .body(problemDetail);
     }
 
-    @ExceptionHandler (MissingPathVariableException.class)
-    protected ResponseEntity<ProblemDetail> handleMissingPathVariableException(MissingPathVariableException exception) {
+    @Override
+    protected ResponseEntity<Object> handleMissingPathVariable(
+            MissingPathVariableException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.BAD_REQUEST, 
             exception.getMessage()
@@ -147,8 +189,13 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                 .body(problemDetail);
     }
 
-    @ExceptionHandler (TypeMismatchException.class)
-    protected ResponseEntity<ProblemDetail> handleMethodArgumentTypeMismatchException (TypeMismatchException exception) {
+     @Override
+    protected ResponseEntity<Object> handleTypeMismatch(
+            org.springframework.beans.TypeMismatchException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
          ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.UNSUPPORTED_MEDIA_TYPE, 
             exception.getMessage()
@@ -162,8 +209,13 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                 .body(problemDetail);
     }
 
-    @ExceptionHandler (HttpMediaTypeNotAcceptableException.class)
-    protected ResponseEntity<ProblemDetail> handleHttpMediaTypeNotAcceptableException (HttpMediaTypeNotAcceptableException exception) {
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(
+            HttpMediaTypeNotAcceptableException exception,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+                
          ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
             HttpStatus.CONFLICT, 
             exception.getMessage()
