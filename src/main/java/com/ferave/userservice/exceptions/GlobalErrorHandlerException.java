@@ -14,6 +14,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -259,5 +261,31 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .build();
+    }
+
+    protected ResponseEntity<ProblemDetail> handleAuthenticationEntryPoint (AuthenticationEntryPoint
+         exception) {
+        
+        ProblemDetail problemDetail = ProblemDetail.forStatus(
+            HttpStatus.UNAUTHORIZED
+        );
+
+        problemDetail.setDetail("No estás autenticado. Inicia sesión para continuar");
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(problemDetail);
+    }
+
+    protected ResponseEntity<ProblemDetail> hanldeAccessDeniedHandler (AccessDeniedHandler exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(
+            HttpStatus.FORBIDDEN
+        );
+
+        problemDetail.setDetail("No tienes permisos para acceder a este recurso.");
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(problemDetail);
     }
 }
