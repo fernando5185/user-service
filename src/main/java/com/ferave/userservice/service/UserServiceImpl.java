@@ -9,11 +9,10 @@ import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
 import com.ferave.userservice.dto.UserUpdateDto;
 import com.ferave.userservice.entity.User;
-import com.ferave.userservice.exceptions.AlreadyExistsException;
+import com.ferave.userservice.exceptions.EmailAlreadyExistsException;
 import com.ferave.userservice.exceptions.ResourceNotFoundException;
 import com.ferave.userservice.mapper.UserMapper;
 import com.ferave.userservice.repository.UserRepository;
-
 
 @Service 
 public class UserServiceImpl implements UserService {
@@ -31,7 +30,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> findByEmail = userRepository.findByEmail(userRequestDto.email());
 
         findByEmail.ifPresent(e -> {
-            throw new AlreadyExistsException("Already " + userRequestDto.email() + " exists");
+            throw new EmailAlreadyExistsException("Already " + userRequestDto.email() + " exists");
         });
         
         User entity = userMapper.toEntity(userRequestDto);

@@ -38,15 +38,17 @@ public class UserController {
     public ResponseEntity<UserResponseDto> saveUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto userResponseDto = userService.saveUser(userRequestDto);
         return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(userResponseDto);
+                .status(HttpStatus.CREATED)
+                .body(userResponseDto);
     }
 
     @GetMapping
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDto>> findAllUsers(){
         List<UserResponseDto> findAll = userService.users();
-        return ResponseEntity.ok().body(findAll);
+        return ResponseEntity
+                .ok()
+                .body(findAll);
     }
 
     @GetMapping("/{id}")
@@ -62,8 +64,8 @@ public class UserController {
     public ResponseEntity<UserResponseDto> updateUser(@Valid @RequestBody  UserUpdateDto userUpdateDto, @PathVariable(name = "id") Long id) {
         UserResponseDto update = userService.updateUser(userUpdateDto, id);
         return ResponseEntity
-            .ok()
-            .body(update);
+                .ok()
+                .body(update);
     }
 
     @DeleteMapping("/{id}")
@@ -71,7 +73,7 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long id) {
         userService.deleteUserById(id);
         return ResponseEntity
-            .noContent()
-            .build();
-    }
+                .noContent()
+                .build();
+        }
 }
