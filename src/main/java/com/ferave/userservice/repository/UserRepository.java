@@ -9,8 +9,6 @@ import com.ferave.userservice.entity.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
-    
-    Optional<User> findByKeycloakId(String keycloakId);
 
     boolean existsByEmail(String email);
 

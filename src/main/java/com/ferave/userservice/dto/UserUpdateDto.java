@@ -2,7 +2,7 @@ package com.ferave.userservice.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 public record UserUpdateDto(
     
@@ -11,7 +11,7 @@ public record UserUpdateDto(
     
     @Email String email, 
     
-    @NotEmpty 
+    @NotNull 
     Boolean enabled
 ) {
 }

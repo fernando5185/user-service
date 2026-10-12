@@ -30,9 +30,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "keycloak_id", nullable = false, unique = true)
-    private String keycloakId;
-
     @Column(nullable = false, unique = true)
     private String userName;
 

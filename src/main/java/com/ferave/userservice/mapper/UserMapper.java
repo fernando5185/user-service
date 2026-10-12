@@ -24,7 +24,6 @@ import com.ferave.userservice.entity.User;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "keycloakId", ignore = true)
     @Mapping(target = "enabled", constant = "true")
     @Mapping(target = "roles", ignore = true)
     User toEntity(UserRequestDto userRequestDto);
@@ -42,7 +41,6 @@ public interface UserMapper {
     )
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "keycloakId", ignore = true)
     void updateUser(UserUpdateDto updateDto, @MappingTarget User entity);
 
     @SuppressWarnings("null")
