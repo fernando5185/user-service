@@ -52,7 +52,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize ("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> findUserById(@PathVariable(name = "id") Long id) {
         return ResponseEntity.
             ok(userService
