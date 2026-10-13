@@ -19,7 +19,7 @@ import com.ferave.userservice.entity.User;
 
 @Mapper(componentModel = "spring", 
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-    unmappedTargetPolicy = ReportingPolicy.IGNORE
+    unmappedTargetPolicy = ReportingPolicy.WARN
 ) 
 public interface UserMapper {
 

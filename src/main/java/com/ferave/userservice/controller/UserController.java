@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController 
-@RequestMapping (path = "/api/v1/users/")
+@RequestMapping (path = "/api/v1/users")
 @Slf4j
 public class UserController {
     
