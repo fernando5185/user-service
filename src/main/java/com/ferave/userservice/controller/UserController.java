@@ -20,11 +20,9 @@ import com.ferave.userservice.dto.UserUpdateDto;
 import com.ferave.userservice.service.UserService;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController 
 @RequestMapping (path = "/api/v1/users")
-@Slf4j
 public class UserController {
     
     private final UserService userService;

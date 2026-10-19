@@ -2,7 +2,9 @@ package com.ferave.userservice.exceptions;
 
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
@@ -25,13 +27,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestControllerAdvice 
-@Slf4j 
 public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler {
 
-    private ProblemDetail createProblemDetail(
+    private ResponseEntity<Object> createProblemDetail(
         HttpStatusCode status,
         String title,
         String detail
@@ -41,7 +40,7 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         problem.setTitle(title);
         problem.setProperty("timestamp", Instant.now());
 
-        return problem;
+        return ResponseEntity.status(status).body(problem);
     }
 
     @Override
@@ -51,10 +50,11 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
 
-        Map<String, String> errors = new HashMap<>();
+        Map<String, List<String>> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
-            errors.put(error.getField(), error.getDefaultMessage())
+            errors.computeIfAbsent(error.getField(), key -> new ArrayList<>())
+                    .add(error.getDefaultMessage())
         );
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
@@ -63,33 +63,27 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         );
 
         problemDetail.setTitle("Validation failed");
-        problemDetail.setProperty("Timestamp", Instant.now());
-        problemDetail.setProperty("Errors", errors);
+        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty("errors", errors);
 
         return ResponseEntity.badRequest().body(problemDetail);
+        
     }
 
     @ExceptionHandler (ResourceNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handleResourceNotFound(ResourceNotFoundException exception) {
-        createProblemDetail(
+    public ResponseEntity<Object> handleResourceNotFound(ResourceNotFoundException exception) {
+        return createProblemDetail(
             HttpStatus.NOT_FOUND, 
             "Resource not Found", 
-            exception.getMessage());
-
-        return ResponseEntity.
-                status(HttpStatus.NOT_FOUND).build();
+            "The requested resource was not found. Check the information provided and try again.");
     }
 
     @ExceptionHandler (EmailAlreadyExistsException.class)
-    public ResponseEntity<ProblemDetail> alreadyExistsException(EmailAlreadyExistsException exception) {
-        createProblemDetail(
+    public ResponseEntity<Object> alreadyEmailExistsException(EmailAlreadyExistsException exception) {
+        return createProblemDetail(
             HttpStatus.CONFLICT, 
             "Already resource exists",
-            exception.getMessage());
-
-        return ResponseEntity.
-                status(HttpStatus.CONFLICT).build();
-
+            "The email address provided is already registered in the system. Please use a different email address.");
     }
 
     @Override
@@ -99,15 +93,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.BAD_REQUEST, 
             "Invalid JSON or unreadable request body",
-            exception.getMessage());
-    
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .build();
+            "The request body is missing, malformed, or contains invalid values.");
     }
 
     @Override
@@ -117,14 +106,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.METHOD_NOT_ALLOWED, 
             "Method Not Supported",
-            exception.getMessage());
-        
-        return ResponseEntity.
-                status(HttpStatus.METHOD_NOT_ALLOWED)
-                .build();
+            "The HTTP method is not supported for this endpoint.");
     }
 
     @Override
@@ -134,14 +119,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.BAD_REQUEST, 
             "Missing Parameter",
-            exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .build();
+            "A required parameter is missing in the request. Check the required parameters and try again.");
     }
 
     @Override
@@ -151,14 +132,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.UNSUPPORTED_MEDIA_TYPE, 
             "Unsupported content type",
-            exception.getMessage());
-
-        return ResponseEntity.
-                status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                .build();
+            "The request Content-Type is not supported.");
     }
 
     @Override
@@ -168,14 +145,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.INTERNAL_SERVER_ERROR, 
             "Parameter is missing",
-            exception.getMessage());
-
-        return ResponseEntity.
-                status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .build();
+            "A required path variable is missing from the server configuration.");
     }
 
      @Override
@@ -185,14 +158,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
         
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.BAD_REQUEST, 
             "A parameter has the wrong type",
-            exception.getMessage());
-
-        return ResponseEntity.
-                status(HttpStatus.BAD_REQUEST)
-                .build();
+            "One or more request parameters have an invalid value or type.");
     }
 
     @Override
@@ -202,62 +171,42 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatusCode status,
             WebRequest request) {
                 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.NOT_ACCEPTABLE, 
             "An acceptable response for the client can't be produced.",
-            exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_ACCEPTABLE)
-                .build();
+            "No response format compatible with the content types accepted in the request was found.");
     }
 
     @ExceptionHandler (AuthenticationException.class)
-    protected ResponseEntity<ProblemDetail> handleAuthenticationException (AuthenticationException exception) {
+    protected ResponseEntity<Object> handleAuthenticationException (AuthenticationException exception) {
 
-        createProblemDetail(
+        return createProblemDetail(
             HttpStatus.UNAUTHORIZED, 
-            "The user is not authenticated or the credentials are not valid",
-            exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .build();
+            "Authentication Failed",
+        "Authentication is required or the supplied credentials are invalid.");
     }
 
     @ExceptionHandler (AccessDeniedException.class)
-    protected ResponseEntity<ProblemDetail> handleAccessDeniedException (AccessDeniedException exception) {
-        createProblemDetail(
-            HttpStatus.UNAUTHORIZED, 
-            "The authenticated user doesn't have enough permissions",
-            exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .build();
+    protected ResponseEntity<Object> handleAccessDeniedException (AccessDeniedException exception) {
+        return createProblemDetail(
+            HttpStatus.FORBIDDEN, 
+            "Access Denied",
+        "You do not have permission to access this resource.");
     }
 
     @ExceptionHandler (InvalidBearerTokenException.class)
-    protected ResponseEntity<ProblemDetail> handleInvalidBearerTokenException (InvalidBearerTokenException exception) {
-        createProblemDetail(
+    protected ResponseEntity<Object> handleInvalidBearerTokenException (InvalidBearerTokenException exception) {
+        return createProblemDetail(
             HttpStatus.UNAUTHORIZED, 
             "The Bearer token is not valid",
-            exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .build();
+            "The supplied access token is invalid or expired.");
     }
 
     @ExceptionHandler (InsufficientAuthenticationException.class)
-    protected ResponseEntity<ProblemDetail> handleInsufficientAuthenticationException (InsufficientAuthenticationException exception) {
-        createProblemDetail(
+    protected ResponseEntity<Object> handleInsufficientAuthenticationException (InsufficientAuthenticationException exception) {
+        return createProblemDetail(
             HttpStatus.UNAUTHORIZED, 
             "Authentication is insufficient to access the resource",
-            exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .build();
+            "The request requires valid authentication to access the requested resource. Check your credentials and try again.");
     }
 }
