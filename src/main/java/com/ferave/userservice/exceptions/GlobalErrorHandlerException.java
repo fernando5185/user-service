@@ -79,11 +79,19 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
     }
 
     @ExceptionHandler (EmailAlreadyExistsException.class)
-    public ResponseEntity<Object> alreadyEmailExistsException(EmailAlreadyExistsException exception) {
+    public ResponseEntity<Object> handleAlreadyEmailExistsException(EmailAlreadyExistsException exception) {
         return createProblemDetail(
             HttpStatus.CONFLICT, 
             "Already resource exists",
             "The email address provided is already registered in the system. Please use a different email address.");
+    }
+
+    @ExceptionHandler (UserNameAlreadyExistsException.class)
+    public ResponseEntity<Object> handleUserNameAlreadyExistsException(UserNameAlreadyExistsException exception) {
+        return createProblemDetail(
+            HttpStatus.CONFLICT, 
+            "Already resource exists",
+            "The username provided is already registered in the system. Please use a different username.");
     }
 
     @Override
