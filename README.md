@@ -325,5 +325,3 @@ Antes de publicar una versión, comprueba al menos:
 4. Abre un Pull Request describiendo el propósito y el impacto de los cambios.
 
 ## Licencia
-
-Añade aquí la licencia del proyecto si decides distribuirlo públicamente.
