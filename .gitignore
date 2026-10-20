@@ -37,4 +37,6 @@ temp.json
 test_api.zsh
 validate_response.py
 keycloak-login.zsh
+
+# Variables de entorno
 .env

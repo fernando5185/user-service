@@ -1,8 +1,9 @@
 package com.ferave.userservice.controller;
 
+import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
@@ -34,10 +36,18 @@ public class UserController {
     @PostMapping
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> saveUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto userResponseDto = userService.saveUser(userRequestDto);
+        UserResponseDto created = userService.saveUser(userRequestDto);
+
+        URI location = ServletUriComponentsBuilder
+                            .fromCurrentRequest()
+                            .path("{/id}")
+                            .buildAndExpand(created.id())
+                            .toUri();
+
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userResponseDto);
+                .status(HttpStatusCode.valueOf(201))
+                .location(location)
+                .body(created);
     }
 
     @GetMapping

@@ -1,9 +1,9 @@
 package com.ferave.userservice.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
@@ -11,10 +11,12 @@ import com.ferave.userservice.dto.UserUpdateDto;
 import com.ferave.userservice.entity.User;
 import com.ferave.userservice.exceptions.EmailAlreadyExistsException;
 import com.ferave.userservice.exceptions.ResourceNotFoundException;
+import com.ferave.userservice.exceptions.UserNameAlreadyExistsException;
 import com.ferave.userservice.mapper.UserMapper;
 import com.ferave.userservice.repository.UserRepository;
 
-@Service 
+@Service
+@org.springframework.transaction.annotation.Transactional (readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -25,13 +27,41 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-    @Override
-    public UserResponseDto saveUser(UserRequestDto userRequestDto) {
-        Optional<User> findByEmail = userRepository.findByEmail(userRequestDto.email());
+    private void validateEmail(UserUpdateDto userUpdateDto, User existingUser) {
+        if (userUpdateDto.email() == null || userUpdateDto.email().equals(existingUser.getEmail())){
+            return;
+        }
 
-        findByEmail.ifPresent(e -> {
-            throw new EmailAlreadyExistsException("Already " + userRequestDto.email() + " exists");
-        });
+        if (userRepository.existsByEmailAndIdNot(userUpdateDto.email(), existingUser.getId())) {
+            throw new EmailAlreadyExistsException("Email " + userUpdateDto.email() + " already exists");
+        }
+    }
+
+    private void validateUserName(UserUpdateDto userUpdateDto, User existingUser) {
+        if (userUpdateDto.userName() == null || userUpdateDto.userName().equals(existingUser.getUserName())) {
+            return;
+        }
+
+        if (userRepository.existsByUserNameAndIdNot(userUpdateDto.userName(), existingUser.getId())) {
+            throw new UserNameAlreadyExistsException("Username already exists");
+        }
+    }
+
+    @Override
+    @Transactional 
+    public UserResponseDto saveUser(UserRequestDto userRequestDto) {
+
+        if (userRepository.existsByEmail(userRequestDto.email())){
+            throw new EmailAlreadyExistsException(
+                "Email already exists"
+            );
+        }
+
+        if (userRepository.existsByUserName(userRequestDto.userName())) {
+            throw new UserNameAlreadyExistsException(
+                "Username already exists"
+            );
+        }
         
         User entity = userMapper.toEntity(userRequestDto);
         
@@ -56,9 +86,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional 
     public UserResponseDto updateUser(UserUpdateDto userUpdateDto, Long id) {
         User existingUser = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
+
+        validateEmail(userUpdateDto, existingUser);
+
+        validateUserName(userUpdateDto, existingUser);
 
         userMapper.updateUser(userUpdateDto, existingUser);
 
@@ -68,6 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional 
     public void deleteUserById(Long id) {
         User exitsingUser = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
