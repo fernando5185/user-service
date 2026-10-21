@@ -1,8 +1,9 @@
 package com.ferave.userservice.controller;
 
 import java.net.URI;
-import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,8 +53,8 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDto>> findAllUsers(){
-        List<UserResponseDto> findAll = userService.users();
+    public ResponseEntity<Page<UserResponseDto>> findAllUsers(Pageable pageable){
+        Page<UserResponseDto> findAll = userService.users(pageable);
         return ResponseEntity
                 .ok()
                 .body(findAll);

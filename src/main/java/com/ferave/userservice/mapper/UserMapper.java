@@ -1,6 +1,5 @@
 package com.ferave.userservice.mapper;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,6 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.data.domain.Page;
 
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
@@ -34,7 +34,9 @@ public interface UserMapper {
     )
     UserResponseDto toDto(User user);
 
-    List<UserResponseDto> toDtoList(List<User> users);
+    default Page<UserResponseDto> toDtoList(Page<User> users){
+        return users.map(this::toDto);
+    };
 
     @BeanMapping(nullValuePropertyMappingStrategy = 
         NullValuePropertyMappingStrategy.IGNORE

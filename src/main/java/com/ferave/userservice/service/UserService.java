@@ -1,6 +1,7 @@
 package com.ferave.userservice.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
@@ -10,7 +11,7 @@ public interface UserService {
 
     UserResponseDto saveUser(UserRequestDto userRequestDto);
 
-    List<UserResponseDto> users();
+    Page<UserResponseDto> users(Pageable pageable);
 
     UserResponseDto findUserById(Long id);
 
