@@ -1,8 +1,6 @@
 # User Service API
 
-API REST para la gestión de usuarios, desarrollada con Spring Boot. Utiliza PostgreSQL para la persistencia, Keycloak como proveedor de identidad y Spring Security OAuth2 Resource Server para proteger los endpoints mediante tokens JWT.
-
-> **Estado:** proyecto en desarrollo. Ajusta las versiones, variables de entorno y configuración de Keycloak a tu entorno antes de desplegarlo.
+API REST para la gestión de usuarios, desarrollada con Spring Boot. Utiliza PostgreSQL para la persistencia, Keycloak como proveedor de identidad y Spring Security OAuth2 Resource Server para proteger los endpoints mediante tokens JWT.
 
 ## Características
 
