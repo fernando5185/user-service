@@ -1,5 +1,24 @@
+
 server:
-  port: 8081
+  port: ${SERVER_PORT}
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+          jwk-set-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI}
 
 springdoc:
   api-docs:
@@ -12,22 +31,3 @@ springdoc:
     tags-sorter: alpha
     display-request-duration: true
   show-actuator: false
-
-spring:
-
-  datasource:
-    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-    username: postgres
-    password: admin
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8080/realms/mi-realm
-          jwk-set-uri: http://host.docker.internal:8080/realms/mi-realm/protocol/openid-connect/certs
