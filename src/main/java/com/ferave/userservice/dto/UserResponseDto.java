@@ -1,10 +1,11 @@
 package com.ferave.userservice.dto;
 
 import java.util.Set;
+import java.util.UUID;
 
 public record UserResponseDto (
     
-    Long id,
+    UUID id,
     
     String userName, 
     

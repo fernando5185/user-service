@@ -1,5 +1,7 @@
 package com.ferave.userservice.service;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,10 +15,10 @@ public interface UserService {
 
     Page<UserResponseDto> users(Pageable pageable);
 
-    UserResponseDto findUserById(Long id);
+    UserResponseDto findUserById(UUID id);
 
-    UserResponseDto updateUser(UserUpdateDto userUpdateDto, Long id);
+    UserResponseDto updateUser(UserUpdateDto userUpdateDto, UUID id);
 
-    void deleteUserById(Long id);
+    void deleteUserById(UUID id);
 
 }

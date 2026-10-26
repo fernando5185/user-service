@@ -2,6 +2,9 @@ package com.ferave.userservice.entity;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
+
+import org.hibernate.annotations.UuidGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,8 +31,10 @@ import lombok.Setter;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "uuid_id", nullable = false, updatable = false)
+    @UuidGenerator
+    private UUID id;
 
     @Column(
         name = "user_name",
@@ -55,7 +60,7 @@ public class User {
     @JoinTable(
         name = "user_roles",
         joinColumns = @JoinColumn(
-            name = "user_id",
+            name = "user_uuid",
             nullable = false
         ),
         inverseJoinColumns = @JoinColumn(
@@ -63,7 +68,7 @@ public class User {
             nullable = false
         ),
         uniqueConstraints = @UniqueConstraint (
-            columnNames = {"user_id", "role_id"}
+            columnNames = {"user_uuid", "role_id"}
         )
     )
     private Set<Role> roles = new HashSet<>();

@@ -1,5 +1,7 @@
 package com.ferave.userservice.service;
 
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto findUserById(Long id) {
+    public UserResponseDto findUserById(UUID id) {
        return userRepository.findById(id).map(userMapper::toDto)
             .orElseThrow(() -> 
                 new ResourceNotFoundException("User with id "+ id + " not found")
@@ -87,7 +89,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional 
-    public UserResponseDto updateUser(UserUpdateDto userUpdateDto, Long id) {
+    public UserResponseDto updateUser(UserUpdateDto userUpdateDto, UUID id) {
         User existingUser = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
 
@@ -104,7 +106,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional 
-    public void deleteUserById(Long id) {
+    public void deleteUserById(UUID id) {
         User exitsingUser = userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
         userRepository

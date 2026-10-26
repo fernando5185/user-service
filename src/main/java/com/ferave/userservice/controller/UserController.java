@@ -1,6 +1,7 @@
 package com.ferave.userservice.controller;
 
 import java.net.URI;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -62,7 +63,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> findUserById(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<UserResponseDto> findUserById(@PathVariable(name = "id") UUID id) {
         return ResponseEntity.
             ok(userService
                 .findUserById(id));
@@ -70,7 +71,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> updateUser(@Valid @RequestBody  UserUpdateDto userUpdateDto, @PathVariable(name = "id") Long id) {
+    public ResponseEntity<UserResponseDto> updateUser(@Valid @RequestBody  UserUpdateDto userUpdateDto, @PathVariable(name = "id") UUID id) {
         UserResponseDto update = userService.updateUser(userUpdateDto, id);
         return ResponseEntity
                 .ok()
@@ -79,7 +80,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable(name = "id") UUID id) {
         userService.deleteUserById(id);
         return ResponseEntity
                 .noContent()
