@@ -1,32 +1,46 @@
 # User Service API
 
-API REST para la gestión de usuarios, desarrollada con Spring Boot. Utiliza PostgreSQL para la persistencia, Keycloak como proveedor de identidad y Spring Security OAuth2 Resource Server para proteger los endpoints mediante tokens JWT.
+API REST para la gestión de usuarios, desarrollada con Spring Boot. Utiliza PostgreSQL para la persistencia de datos, Keycloak como proveedor de identidad y Spring Security OAuth2 Resource Server para proteger los endpoints mediante tokens JWT.
+
+El proyecto aplica separación de responsabilidades, validación de datos mediante DTOs, mapeo con MapStruct y manejo centralizado de errores mediante ProblemDetail.
+
 
 ## Características
 
-- Crear, consultar, actualizar y eliminar usuarios.
-- Validación de solicitudes mediante DTOs y Bean Validation.
+- Operaciones CRUD para la gestión de usuarios.
+- Identificadores UUID para los usuarios.
+- Validación de solicitudes con DTOs y Bean Validation.
 - Persistencia relacional con PostgreSQL y Spring Data JPA.
-- Mapeo entre entidades y DTOs con MapStruct.
-- Autenticación mediante JWT emitidos por Keycloak.
-- Autorización basada en roles (`ROLE_ADMIN` y `ROLE_USER`).
-- Manejo centralizado de errores con `ProblemDetail`.
-- Respuestas HTTP consistentes para errores de validación y seguridad.
-- Entorno local basado en Docker Compose.
+- Mapeo entre entidades y DTOs mediante MapStruct.
+- Autenticación basada en JWT emitidos por Keycloak.
+- Autorización mediante roles y autoridades de Spring Security.
+- Manejo centralizado de errores HTTP con ProblemDetail.
+- Actualización parcial de usuarios mediante PATCH.
+- Restricciones de unicidad para los datos que lo requieren.
+- Entorno de desarrollo local con Docker Compose.
+- Pruebas automatizadas mediante las herramientas configuradas en el proyecto.
 
 ## Tecnologías
+| Tecnologia | Próposito |
+|---|---|---|
+| Java | Lenguaje de programación |
+| Spring Boot | Framework principal |
+| Spring Web / Spring MVC | Desarrollo de endpoints REST |
+| Spring Security | Seguridad y autorización |
+| OAuth 2.0 Resource Server | Validación de tokens de acceso |
+| JWT | Representación de tokens de acceso |
+| Keycloak | Gestión de identidades, clientes y roles |
+| OAuth 2.0 Resource Server | Validación de tokens de acceso |
+| JWT | Representación de tokens de acceso |
+| Hibernate | Implementación ORM |
+| PostgreSQL | Gestión de dependencias y construcción |
+| Docker / Docker Compose | Ejecución del entorno local |
 
-- Java y Spring Boot
-- Spring Web / Spring MVC
-- Spring Security
-- OAuth 2.0 Resource Server y JWT
-- Spring Data JPA / Hibernate
-- PostgreSQL
-- Keycloak
-- MapStruct
-- Docker y Docker Compose
-
-> Añade aquí las versiones exactas de Java, Spring Boot y las dependencias según tu `pom.xml` o `build.gradle`.
+## Versiones
+| Componente | Versión |
+|---|---|---|
+| Java | 21 |
+| Spring Boot | 4.1.1 |
 
 ## Arquitectura general
 
@@ -55,6 +69,9 @@ PostgreSQL
 
 Keycloak: emite los JWT y administra las identidades y roles.
 ```
+La arquitectura separa las responsabilidades de autenticación, autorización, exposición de endpoints, lógica de negocio y persistencia.
+
+Si deseas ejecutar la aplicación directamente desde tu máquina, también necesitarás Java 21 y Maven.
 
 ## Requisitos previos
 
@@ -67,9 +84,75 @@ Para ejecutar el entorno local necesitas:
 
 Si vas a ejecutar la aplicación fuera de Docker, también necesitarás la versión de Java y la herramienta de construcción configuradas en el proyecto.
 
-## Configuración
+## Instalación y configuración
 
-La aplicación requiere una base de datos PostgreSQL y un realm de Keycloak configurado para emitir tokens compatibles con el Resource Server.
+1. Clonar el repositorio
+
+```bash
+git clone https://github.com/fernando5185/user-service.git
+cd user-service
+```
+Si trabajas en una rama específica, cambia a ella antes de iniciar el proyecto.
+
+2. Revisar la configuración
+
+- Comprueba los siguientes archivos, según estén presentes en el repositorio:
+- docker-compose.yml: definición de los servicios y sus redes.
+- Dockerfile: construcción de la imagen de la API.
+- pom.xml: dependencias, plugins y configuración de Maven.
+- src/main/resources/application.yml o application.properties: configuración de Spring Boot.
+- Configuración de Keycloak: realm, clientes, roles y usuarios.
+- Scripts de inicialización de PostgreSQL, si existen.
+
+No asumas que las bases de datos o los roles se crean automáticamente: verifica los scripts y la configuración efectiva.
+
+3. Iniciar el entorno
+
+Desde el directorio que contiene el archivo `docker-compose.yml`:
+
+```bash
+docker compose up --build -d
+```
+
+Consulta los contendores de tu proyecto mostrando el estado actual:
+
+```bash
+docker compose ps
+```
+
+Consulta el estado, puertos, nombre, imagen y servicio asociado de los contendores:
+
+```bash
+docker compose ps -a
+```
+
+Consulta los logs de la aplicación:
+
+```bash
+docker compose logs -f app
+```
+
+Consulta los logs de Keycloak:
+
+```bash
+docker compose logs -f keycloak
+```
+
+4. Detener el entorno
+
+Para detener los servicios:
+
+```bash
+docker compose down
+```
+
+Para detener los servicios y eliminar también el volumen de datos de PostgreSQL:
+
+```bash
+docker compose down -v
+```
+
+> **Precaución**: el segundo comando puede eliminar los datos persistidos de PostgreSQL y otros volúmenes declarados en Compose. Utilízalo únicamente cuando realmente quieras reiniciar el entorno y hayas respaldado los datos necesarios.
 
 ### Variables de entorno
 
@@ -85,48 +168,6 @@ La configuración actual de Docker Compose utiliza valores de desarrollo similar
 
 **Importante:** los valores de ejemplo son para desarrollo local, no para producción. `localhost` dentro de un contenedor apunta a ese mismo contenedor. Verifica que la URL de emisor (`iss`) coincida exactamente con la que incluye el JWT de Keycloak. La URL de las claves públicas debe ser accesible desde el contenedor de la aplicación.
 
-No publiques credenciales reales en Git. Para otros entornos, usa variables de entorno o un gestor de secretos.
-
-## Ejecución con Docker Compose
-
-Desde el directorio que contiene el archivo `compose.yaml` o `docker-compose.yml`:
-
-```bash
-docker compose up --build -d
-```
-
-Consulta el estado de los servicios:
-
-```bash
-docker compose ps
-```
-
-Consulta los logs de la aplicación:
-
-```bash
-docker compose logs -f app
-```
-
-Consulta los logs de Keycloak:
-
-```bash
-docker compose logs -f keycloak
-```
-
-Para detener los servicios:
-
-```bash
-docker compose down
-```
-
-Para detener los servicios y eliminar también el volumen de datos de PostgreSQL:
-
-```bash
-docker compose down -v
-```
-
-> **Precaución:** `docker compose down -v` elimina el volumen de la base de datos y, por tanto, puede borrar los datos persistidos.
-
 ### Puertos locales
 
 Según la configuración de Compose compartida:
@@ -138,8 +179,6 @@ Según la configuración de Compose compartida:
 | PostgreSQL | `5432` |
 
 Keycloak necesita una base de datos disponible y la base de datos `keycloak` debe existir. Si solo configuras `POSTGRES_DB=user_service`, comprueba que un script de inicialización cree también la base `keycloak` antes de que Keycloak intente conectarse.
-
-`depends_on` por sí solo no garantiza que PostgreSQL o Keycloak estén listos para aceptar conexiones. Para un arranque más fiable, configura health checks y estrategias de reintento.
 
 ## Configuración de Keycloak
 
@@ -160,7 +199,14 @@ El conversor personalizado transforma los roles del realm en autoridades de Spri
 
 Esto permite proteger métodos con expresiones como `@PreAuthorize("hasRole('ADMIN')")`.
 
-> Los roles guardados en la tabla local `user_roles` no se incorporan automáticamente a los JWT. Define claramente si Keycloak es la fuente de autoridad de los permisos o si existe un mecanismo de sincronización con la base de datos de la aplicación.
+## Consideraciones importantes:
+
+- Dentro de Docker Compose, la API debe conectarse a PostgreSQL mediante el nombre del servicio, por ejemplo postgres, no mediante localhost.
+- localhost dentro de un contenedor apunta al propio contenedor.
+- host.docker.internal permite acceder desde el contenedor al host en entornos compatibles, pero su disponibilidad depende del sistema operativo y de la configuración de Docker.
+- El valor de SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI debe coincidir exactamente con el claim iss del JWT.
+- La URL de las claves públicas debe ser accesible desde la API.
+- Si se configura explícitamente JWK_SET_URI, verifica que la configuración de seguridad mantenga también la validación del emisor.
 
 ## Endpoints
 
@@ -176,11 +222,9 @@ Los endpoints requieren un Bearer token válido y los roles indicados, de acuerd
 |---|---|---|---|
 | `POST` | `/api/v1/users` | `ADMIN` | Crear un usuario |
 | `GET` | `/api/v1/users` | `ADMIN` | Consultar todos los usuarios |
-| `GET` | `/api/v1/users/{id}` | `ADMIN` o `USER` | Consultar un usuario por ID |
+| `GET` | `/api/v1/users/{id}` | `ADMIN` | Consultar un usuario por ID |
 | `PATCH` | `/api/v1/users/{id}` | `ADMIN` | Actualizar un usuario |
 | `DELETE` | `/api/v1/users/{id}` | `ADMIN` | Eliminar un usuario |
-
-**Nota de autorización:** con la regla actual, cualquier usuario con `ROLE_USER` puede intentar consultar cualquier ID. Si los usuarios solo deben consultar su propio perfil, implementa una ruta como `/api/v1/users/me` y vincula la identidad local con el `sub` del JWT, o restringe la consulta por ID a administradores.
 
 ### Ejemplo: crear un usuario
 
@@ -210,14 +254,14 @@ Requiere `ROLE_ADMIN`.
 ### Ejemplo: consultar por ID
 
 ```bash
-curl -X GET "http://localhost:8081/api/v1/users/1" \
+curl -X GET "http://localhost:8081/api/v1/users/7cbdb35f-a5cf-410f-abd8-15b4ab1ff6ac" \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
 ### Ejemplo: actualizar un usuario
 
 ```bash
-curl -X PATCH "http://localhost:8081/api/v1/users/1" \
+curl -X PATCH "http://localhost:8081/api/v1/users/7cbdb35f-a5cf-410f-abd8-15b4ab1ff6ac" \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
@@ -230,7 +274,7 @@ El ejemplo es ilustrativo: envía únicamente los campos admitidos por `UserUpda
 ### Ejemplo: eliminar un usuario
 
 ```bash
-curl -X DELETE "http://localhost:8081/api/v1/users/1" \
+curl -X DELETE "http://localhost:8081/api/v1/users/7cbdb35f-a5cf-410f-abd8-15b4ab1ff6ac" \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
 ```
 
@@ -238,7 +282,7 @@ La respuesta exitosa es `204 No Content`.
 
 ## Manejo de errores
 
-La API centraliza errores MVC mediante `ResponseEntityExceptionHandler` y utiliza `ProblemDetail` para estructurar las respuestas. Los errores de autenticación y autorización que ocurren en la cadena de filtros de Spring Security deben gestionarse con `AuthenticationEntryPoint` y `AccessDeniedHandler`.
+La API centraliza errores MVC mediante `ResponseEntityExceptionHandler` y utiliza `ProblemDetail` para estructurar las respuestas. Los errores de autenticación y autorización que ocurren en la cadena de filtros de Spring Security se gestionan con `AuthenticationEntryPoint` y `AccessDeniedHandler`.
 
 Estados previstos:
 
@@ -287,8 +331,6 @@ Representa un usuario de la aplicación e incluye, entre otros campos:
 
 Representa un rol de la aplicación. Se relaciona con usuarios mediante la tabla intermedia `user_roles`.
 
-La gestión de los roles locales debe mantenerse diferenciada de los roles de realm emitidos en el JWT, salvo que se implemente una integración explícita entre ambos.
-
 ## Buenas prácticas de seguridad
 
 - No utilizar contraseñas de ejemplo en producción.
@@ -322,4 +364,6 @@ Antes de publicar una versión, comprueba al menos:
 3. Realiza los cambios y añade pruebas cuando corresponda.
 4. Abre un Pull Request describiendo el propósito y el impacto de los cambios.
 
-## Licencia
+## Credits
+
+Made with ❤️ by [fernando5185](https://github.com/fernando5185), licensed under [MIT](https://github.com/fernando5185/user-service/blob/feature-api/LICENSE).
