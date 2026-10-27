@@ -3,6 +3,10 @@ server:
   port: ${SERVER_PORT}
 
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
