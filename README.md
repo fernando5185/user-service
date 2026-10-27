@@ -22,7 +22,7 @@ El proyecto aplica separación de responsabilidades, validación de datos median
 
 ## Tecnologías
 | Tecnologia | Próposito |
-|---|---|---|
+|---|---|
 | Java | Lenguaje de programación |
 | Spring Boot | Framework principal |
 | Spring Web / Spring MVC | Desarrollo de endpoints REST |
@@ -38,7 +38,7 @@ El proyecto aplica separación de responsabilidades, validación de datos median
 
 ## Versiones
 | Componente | Versión |
-|---|---|---|
+|---|---|
 | Java | 21 |
 | Spring Boot | 4.1.1 |
 
