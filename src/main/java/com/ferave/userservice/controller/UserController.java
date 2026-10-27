@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,13 +41,12 @@ public class UserController {
 
         URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
-                            .path("{/id}")
+                            .path("/{id}")
                             .buildAndExpand(created.id())
                             .toUri();
 
         return ResponseEntity
-                .status(HttpStatusCode.valueOf(201))
-                .location(location)
+                .created(location)
                 .body(created);
     }
 
