@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.ferave.userservice.security.KeycloakJwtAuthenticationConverter;
+import com.ferave.userservice.security.CusomAuthenticationEntryPoint;
+import com.ferave.userservice.security.CustomAccessDeniedHandler;
 
 @Configuration 
 @EnableWebSecurity 
@@ -27,6 +29,10 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
                 )
+            )
+            .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(new CusomAuthenticationEntryPoint())
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
