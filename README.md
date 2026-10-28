@@ -29,7 +29,7 @@ El proyecto aplica separación de responsabilidades, validación de datos median
 | Spring Security | Seguridad y autorización |
 | OAuth 2.0 Resource Server | Validación de tokens de acceso |
 | JWT | Representación de tokens de acceso |
-| Keycloak | Gestión de identidades, clientes y roles |
+| Keycloak | Gestión de identidades, clientes y roles |
 | Hibernate | Implementación ORM |
 | PostgreSQL | Gestión de dependencias y construcción |
 | Docker Docker Compose | Ejecución del entorno local |
