@@ -16,11 +16,20 @@ public class CustomAccessDeniedHandler  implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
-       response.sendError(
-            HttpServletResponse.SC_FORBIDDEN,
-            "Forbidden"
+        
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        response.getWriter().write(
+            """
+            {
+                "status": 403,
+                "title": "Forbidden",
+                "detail": "No tienes permisos para acceder a este recurso"
+            }
+            """
         );
-       response.getWriter().write("Authentication failed!");
     }
 
 }

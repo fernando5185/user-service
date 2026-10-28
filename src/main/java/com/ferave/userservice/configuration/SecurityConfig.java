@@ -10,13 +10,20 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.ferave.userservice.security.KeycloakJwtAuthenticationConverter;
+
+import lombok.RequiredArgsConstructor;
+
 import com.ferave.userservice.security.CusomAuthenticationEntryPoint;
 import com.ferave.userservice.security.CustomAccessDeniedHandler;
 
 @Configuration 
-@EnableWebSecurity 
+@EnableWebSecurity
+@RequiredArgsConstructor  
 @EnableMethodSecurity (prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
+
+    private final CusomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(
@@ -31,8 +38,8 @@ public class SecurityConfig {
                 )
             )
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(new CusomAuthenticationEntryPoint())
-                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
@@ -52,6 +59,8 @@ public class SecurityConfig {
                         jwtAuthenticationConverter
                     )
                 )
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler)
             );
         return http.build();
     }
