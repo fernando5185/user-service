@@ -32,7 +32,7 @@ El proyecto aplica separación de responsabilidades, validación de datos median
 | Keycloak | Gestión de identidades, clientes y roles |
 | Hibernate | Implementación ORM |
 | PostgreSQL | Gestión de dependencias y construcción |
-| Docker / Docker Compose | Ejecución del entorno local |
+| Docker Docker Compose | Ejecución del entorno local |
 
 ## Versiones
 | Componente | Versión |
