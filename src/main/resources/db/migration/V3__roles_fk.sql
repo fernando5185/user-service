@@ -1,10 +1,12 @@
--- Crear FK hacia roles solo si no existe
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint WHERE conname = 'fkh8ciramu9cc9q3qcqiv4ue8a6'
-    ) THEN
-        ALTER TABLE user_roles
-        ADD CONSTRAINT fkh8ciramu9cc9q3qcqiv4ue8a6 FOREIGN KEY (role_id) REFERENCES roles(id);
-    END IF;
-END$$;
+-- V2: Delegate role management to Keycloak.
+--
+-- Changes already applied manually in PostgreSQL:
+-- - Added keycloak_id to users.
+-- - Added UNIQUE constraint to keycloak_id.
+-- - Dropped user_roles.
+-- - Dropped roles.
+-- - Removed the foreign key relationship with roles.
+--
+-- No additional schema changes are required.
+
+SELECT 1;

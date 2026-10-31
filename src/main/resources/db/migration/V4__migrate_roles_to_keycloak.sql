@@ -1,0 +1,11 @@
+-- Migration: Move role management to Keycloak.
+--
+-- Changes already applied manually to the database:
+-- 1. Added users.keycloak_id VARCHAR(100).
+-- 2. Added UNIQUE constraint to users.keycloak_id.
+-- 3. Removed user_roles table.
+-- 4. Removed roles table.
+--
+-- This migration is intentionally a no-op because
+-- these changes were already applied manually.
+SELECT 1;
