@@ -22,6 +22,4 @@
 -- Esta migración no debe volver a ejecutarse.
 -- ============================================================
 
--- SQL histórico conservado para documentación.
-
 SELECT 1;
