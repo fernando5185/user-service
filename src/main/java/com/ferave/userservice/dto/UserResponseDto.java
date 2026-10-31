@@ -1,6 +1,5 @@
 package com.ferave.userservice.dto;
 
-import java.util.Set;
 import java.util.UUID;
 
 public record UserResponseDto (
@@ -11,8 +10,6 @@ public record UserResponseDto (
     
     String email,
 
-    Boolean enabled,
-
-    Set<String> roles
+    Boolean enabled
 ) {
 }
