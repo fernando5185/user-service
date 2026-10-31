@@ -18,5 +18,3 @@
 -- Esta migración ya fue ejecutada anteriormente.
 -- No debe volver a ejecutarse sobre la base de datos actual.
 -- ============================================================
-
-SELECT 1;
