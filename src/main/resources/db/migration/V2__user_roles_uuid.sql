@@ -20,7 +20,3 @@
 -- Esta migración ya fue ejecutada anteriormente.
 -- No debe volver a ejecutarse sobre la base de datos actual.
 -- ============================================================
-
--- SQL histórico conservado para documentación.
-
-SELECT 1;
