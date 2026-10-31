@@ -1,15 +1,22 @@
--- Agregar columna UUID solo si no existe
-ALTER TABLE users ADD COLUMN IF NOT EXISTS uuid_id UUID;
+-- ============================================================
+-- V1: Migración de identificadores de usuarios a UUID
+-- ============================================================
+--
+-- Objetivo:
+-- Incorporar un identificador UUID a la tabla users
+-- para reemplazar el identificador numérico original.
+--
+-- Cambios realizados:
+-- 1. Agregar la columna uuid_id de tipo UUID.
+-- 2. Generar un UUID para los usuarios existentes.
+-- 3. Establecer uuid_id como clave primaria.
+--
+-- Resultado:
+-- La tabla users utiliza UUID como identificador principal.
+--
+-- IMPORTANTE:
+-- Esta migración ya fue ejecutada anteriormente.
+-- No debe volver a ejecutarse sobre la base de datos actual.
+-- ============================================================
 
--- Poblar la columna con valores aleatorios si está vacía
-UPDATE users SET uuid_id = gen_random_uuid() WHERE uuid_id IS NULL;
-
--- Crear PK sobre uuid_id solo si no existe
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_constraint WHERE conname = 'users_pkey'
-    ) THEN
-        ALTER TABLE users ADD CONSTRAINT users_pkey PRIMARY KEY (uuid_id);
-    END IF;
-END$$;
+SELECT 1;
