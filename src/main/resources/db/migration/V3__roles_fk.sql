@@ -21,5 +21,3 @@
 -- La tabla roles y la tabla user_roles fueron eliminadas.
 -- Esta migración no debe volver a ejecutarse.
 -- ============================================================
-
-SELECT 1;
