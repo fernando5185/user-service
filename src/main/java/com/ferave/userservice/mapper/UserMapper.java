@@ -22,7 +22,7 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "enabled", constant = "true")
-    @Mapping(target = "keycloakId", constant = "true")
+    @Mapping(target = "keycloakId", ignore = true)
     User toEntity(UserRequestDto userRequestDto);
 
     UserResponseDto toDto(User user);
