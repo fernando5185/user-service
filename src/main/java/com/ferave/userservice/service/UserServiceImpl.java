@@ -1,5 +1,6 @@
 package com.ferave.userservice.service;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -30,22 +31,28 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateEmail(UserUpdateDto userUpdateDto, User existingUser) {
-        if (userUpdateDto.email() == null || userUpdateDto.email().equals(existingUser.getEmail())){
+        if (userUpdateDto.email() == null || 
+                userUpdateDto.email().equals(existingUser.getEmail())){
             return;
         }
 
         if (userRepository.existsByEmailAndIdNot(userUpdateDto.email(), existingUser.getId())) {
-            throw new EmailAlreadyExistsException("Email " + userUpdateDto.email() + " already exists");
+            throw new EmailAlreadyExistsException(
+                "Email " + userUpdateDto.email() + " already exists"
+            );
         }
     }
 
     private void validateUserName(UserUpdateDto userUpdateDto, User existingUser) {
-        if (userUpdateDto.userName() == null || userUpdateDto.userName().equals(existingUser.getUserName())) {
-            return;
+        if (userUpdateDto.userName() == null || 
+            Objects.equals(userUpdateDto.userName(), existingUser.getUserName())) {
+        return;
         }
 
         if (userRepository.existsByUserNameAndIdNot(userUpdateDto.userName(), existingUser.getId())) {
-            throw new UserNameAlreadyExistsException("Username already exists");
+            throw new UserNameAlreadyExistsException(
+                "Username " + userUpdateDto.userName() + " already exists"
+            );
         }
     }
 

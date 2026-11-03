@@ -1,7 +1,5 @@
 package com.ferave.userservice.mapper;
 
-
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -31,9 +29,6 @@ public interface UserMapper {
         return users.map(this::toDto);
     };
 
-    @BeanMapping(nullValuePropertyMappingStrategy = 
-        NullValuePropertyMappingStrategy.IGNORE
-    )
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "keycloakId", ignore = true)
     void updateUser(UserUpdateDto updateDto, @MappingTarget User entity);

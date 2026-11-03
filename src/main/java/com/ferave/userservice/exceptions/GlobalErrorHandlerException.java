@@ -5,8 +5,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -183,6 +185,17 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             HttpStatus.NOT_ACCEPTABLE, 
             "An acceptable response for the client can't be produced.",
             "No response format compatible with the content types accepted in the request was found.");
+    }
+
+    @ExceptionHandler (DataIntegrityViolationException.class)
+    protected ResponseEntity<Object> handleDataIntegrityViolationException (
+        DataIntegrityViolationException exception,
+        Locale locale
+    ) {
+        return createProblemDetail(
+            HttpStatus.CONFLICT,
+            "The operation violates a data integrity constraint.",
+            HttpStatus.CONFLICT.getReasonPhrase());
     }
 
     @ExceptionHandler (AuthenticationException.class)
