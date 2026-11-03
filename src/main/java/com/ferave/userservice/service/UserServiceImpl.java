@@ -24,10 +24,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final KeycloakUserService keycloakUserService;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
+            KeycloakUserService keycloakUserService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.keycloakUserService = keycloakUserService;
     }
 
     private void validateEmail(UserUpdateDto userUpdateDto, User existingUser) {
@@ -71,8 +74,12 @@ public class UserServiceImpl implements UserService {
                 "Username already exists"
             );
         }
+
+        String keycloak_id = keycloakUserService.createUser(userRequestDto);
         
         User entity = userMapper.toEntity(userRequestDto);
+
+        entity.setKeycloakId(keycloak_id);
         
         User saveUser =userRepository.save(entity);
         

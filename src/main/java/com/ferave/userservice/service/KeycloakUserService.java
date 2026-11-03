@@ -1,0 +1,54 @@
+package com.ferave.userservice.service;
+
+import org.keycloak.admin.client.CreatedResponseUtil;
+import org.keycloak.admin.client.Keycloak;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.ferave.userservice.dto.UserRequestDto;
+import com.ferave.userservice.exceptions.KeycloakAdminException;
+
+import jakarta.ws.rs.core.Response;
+
+@Service 
+public class KeycloakUserService {
+
+    private final Keycloak keycloak;
+    
+    public KeycloakUserService(Keycloak keycloak) {
+        this.keycloak = keycloak;
+    }
+
+    @Value ("${keycloak.realm}")
+    private String realm;
+
+    public String createUser (UserRequestDto dto) {
+        
+        UserRepresentation userRepresentation = new UserRepresentation();
+
+        userRepresentation.setUsername(dto.userName());
+        userRepresentation.setEmail(dto.email());
+        userRepresentation.setEnabled(true);
+
+        try (Response response = keycloak.realm(realm)
+            .users()
+            .create(userRepresentation)) {
+
+            int status = response.getStatus();
+
+            if (status != Response.Status.CREATED.getStatusCode()) {
+
+                String responseBody = response.hasEntity()
+                    ? response.readEntity(String.class)
+                    : "No response body";
+
+                throw new KeycloakAdminException(
+                    "Keycloak returned status: " + status
+                    + " - " + responseBody
+                );
+            }
+        return CreatedResponseUtil.getCreatedId(response);
+        }
+    }
+}

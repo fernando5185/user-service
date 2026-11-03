@@ -34,6 +34,7 @@ build/
 
 ### Automatizaciones ###
 keycloak-login.zsh
+keycloak-fix-service-account.sh
 
 # Variables de entorno
 .env
