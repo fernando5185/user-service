@@ -2,6 +2,7 @@ package com.ferave.userservice.service;
 
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,10 @@ public class KeycloakUserService {
         this.keycloak = keycloak;
     }
 
+    private UsersResource userResource() {
+        return keycloak.realm(realm).users();
+    }
+
     @Value ("${keycloak.realm}")
     private String realm;
 
@@ -31,24 +36,31 @@ public class KeycloakUserService {
         userRepresentation.setEmail(dto.email());
         userRepresentation.setEnabled(true);
 
-        try (Response response = keycloak.realm(realm)
-            .users()
+        try (Response response = userResource()
             .create(userRepresentation)) {
 
             int status = response.getStatus();
 
             if (status != Response.Status.CREATED.getStatusCode()) {
 
-                String responseBody = response.hasEntity()
-                    ? response.readEntity(String.class)
-                    : "No response body";
+                throw new KeycloakAdminException("Error creating the user in Keycloak");
 
-                throw new KeycloakAdminException(
-                    "Keycloak returned status: " + status
-                    + " - " + responseBody
-                );
             }
+
         return CreatedResponseUtil.getCreatedId(response);
+        
         }
+    }
+
+    public UserRepresentation findUserById(String id) {
+        return userResource()
+            .get(id)
+            .toRepresentation();
+    }
+
+    public void deleteUserById (String id) {
+        userResource()
+            .get(id)
+            .remove();
     }
 }
