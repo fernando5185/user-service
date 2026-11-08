@@ -15,9 +15,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MediaType;
 
 @Component 
 public class CustomAccessDeniedHandler  implements AccessDeniedHandler {
+
+    private final ObjectMapper objectMapper;
+
+    public CustomAccessDeniedHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
@@ -32,13 +39,12 @@ public class CustomAccessDeniedHandler  implements AccessDeniedHandler {
         problem.setProperty("timestamp", Instant.now());
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.setContentType("application/json");
+        response.setContentType(MediaType.APPLICATION_JSON);
         response.setCharacterEncoding("UTF-8");
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         
-        mapper.writeValue(response.getWriter(), problem);
+        objectMapper.writeValue(response.getWriter(), problem);
     }
 
 }

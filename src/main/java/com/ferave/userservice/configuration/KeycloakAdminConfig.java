@@ -3,6 +3,7 @@ package com.ferave.userservice.configuration;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,10 +12,10 @@ public class KeycloakAdminConfig {
     
     @Bean (destroyMethod="close")
     public Keycloak keycloak(
-        @org.springframework.beans.factory.annotation.Value ("${keycloak.server-url}") String serverUrl,
-        @org.springframework.beans.factory.annotation.Value ("${keycloak.realm}") String realm,
-        @org.springframework.beans.factory.annotation.Value ("${keycloak.client-id}") String clientId,
-        @org.springframework.beans.factory.annotation.Value ("${keycloak.client-secret}") String clientSecret
+        @Value ("${keycloak.server-url}") String serverUrl,
+        @Value ("${keycloak.realm}") String realm,
+        @Value("${keycloak.client-id}") String clientId,
+        @Value ("${keycloak.client-secret}") String clientSecret
     ){
         return KeycloakBuilder.builder()
             .serverUrl(serverUrl)
