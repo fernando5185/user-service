@@ -36,19 +36,24 @@ public class KeycloakUserService {
         userRepresentation.setEmail(dto.email());
         userRepresentation.setEnabled(true);
 
-        try (Response response = userResource()
+        try (Response response = keycloak.realm(realm)
+            .users()
             .create(userRepresentation)) {
 
             int status = response.getStatus();
 
             if (status != Response.Status.CREATED.getStatusCode()) {
 
-                throw new KeycloakAdminException("Error creating the user in Keycloak");
+                String responseBody = response.hasEntity()
+                    ? response.readEntity(String.class)
+                    : "No response body";
 
+                throw new KeycloakAdminException(
+                    "Keycloak returned status: " + status
+                    + " - " + responseBody
+                );
             }
-
         return CreatedResponseUtil.getCreatedId(response);
-        
         }
     }
 
