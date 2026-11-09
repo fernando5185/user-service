@@ -32,7 +32,7 @@ public class CustomAccessDeniedHandler  implements AccessDeniedHandler {
 
         ProblemDetail problem =ProblemDetail.forStatusAndDetail(
              HttpStatus.FORBIDDEN,
-             "No tienes permisos para acceder a este recurso"
+             "You don't have permission to access this resource"
         );
 
         problem.setTitle("Access Denied");
