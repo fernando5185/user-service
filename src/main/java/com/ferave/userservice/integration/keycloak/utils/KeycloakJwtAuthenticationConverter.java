@@ -1,4 +1,4 @@
-package com.ferave.userservice.security;
+package com.ferave.userservice.integration.keycloak.utils;
 
 import java.util.Collection;
 import java.util.List;

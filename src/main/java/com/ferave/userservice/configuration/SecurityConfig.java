@@ -9,7 +9,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.ferave.userservice.security.KeycloakJwtAuthenticationConverter;
+import com.ferave.userservice.integration.keycloak.utils.KeycloakJwtAuthenticationConverter;
 
 import lombok.RequiredArgsConstructor;
 

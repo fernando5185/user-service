@@ -1,4 +1,4 @@
-package com.ferave.userservice.configuration;
+package com.ferave.userservice.integration.keycloak.config;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
