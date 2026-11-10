@@ -20,6 +20,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
 import com.ferave.userservice.dto.UserUpdateDto;
+import com.ferave.userservice.integration.model.UserIdentityRequest;
+import com.ferave.userservice.integration.model.UserIdentityResponse;
+import com.ferave.userservice.integration.port.UserIdentityProvider;
 import com.ferave.userservice.service.UserService;
 
 import jakarta.validation.Valid;
@@ -29,9 +32,11 @@ import jakarta.validation.Valid;
 public class UserController {
     
     private final UserService userService;
+    private final UserIdentityProvider userIdentityProvider;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserIdentityProvider userIdentityProvider) {
         this.userService = userService;
+        this.userIdentityProvider = userIdentityProvider;
     }
 
     @PostMapping
@@ -48,6 +53,23 @@ public class UserController {
         return ResponseEntity
                 .created(location)
                 .body(created);
+    }
+
+    @PostMapping (path = "/identity")
+    @PreAuthorize ("hasRole('ADMIN')")
+    public ResponseEntity<UserIdentityResponse> saveUserIdentity(@Valid @RequestBody UserIdentityRequest userIdentityRequest) {
+        UserIdentityResponse created = userIdentityProvider.saveUserIdentity(userIdentityRequest);
+
+        URI location = ServletUriComponentsBuilder
+                            .fromCurrentRequest()
+                            .path("/{id}")
+                            .buildAndExpand(created.id())
+                            .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .body(created);
+
     }
 
     @GetMapping

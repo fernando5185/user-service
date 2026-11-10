@@ -2,7 +2,7 @@ package com.ferave.userservice.integration.model;
 
 public record UserIdentityResponse (
 
-    String externalId,
+    String id,
 
     String username,
 

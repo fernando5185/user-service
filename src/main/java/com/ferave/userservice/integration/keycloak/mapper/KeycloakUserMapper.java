@@ -15,7 +15,6 @@ import com.ferave.userservice.integration.model.UserIdentityResponse;
 ) 
 public interface KeycloakUserMapper {
     
-    @Mapping (target = "externalId", ignore = true)
     UserIdentityResponse toDto(UserRepresentation userRepresentation);
 
     @Mapping (target = "id", ignore = true)
