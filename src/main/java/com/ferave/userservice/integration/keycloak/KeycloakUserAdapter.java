@@ -1,5 +1,7 @@
 package com.ferave.userservice.integration.keycloak;
 
+import java.util.List;
+
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -61,11 +63,9 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
 
             String keycloakId = CreatedResponseUtil.getCreatedId(response);
 
-            UserRepresentation userRepresentationEntity = userIdentityMapper.toEntity(userIdentityRequest);
+            userRepresentation.setId(keycloakId);
 
-            userRepresentationEntity.setId(keycloakId);
-
-            return userIdentityMapper.toDto(userRepresentationEntity);
+            return userIdentityMapper.toDto(userRepresentation);
         }
     }
 
@@ -78,5 +78,12 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
     @Override
     public void deleteUserIdentityById(String keycloakId) {
         userResource().get(keycloakId).remove();
+    }
+
+    @Override
+    public List<UserIdentityResponse> usersIdentity() {
+        List<UserRepresentation> userRepresentations = userResource().list();
+        return userIdentityMapper
+            .toDtoList(userRepresentations);
     }
 }

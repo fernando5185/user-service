@@ -1,5 +1,7 @@
 package com.ferave.userservice.integration.keycloak.mapper;
 
+import java.util.List;
+
 import org.keycloak.representations.idm.UserRepresentation;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -46,4 +48,12 @@ public interface KeycloakUserMapper {
     @Mapping(target = "rawAttributes", ignore = true)
     @Mapping(target = "applicationRoles", ignore = true)
     UserRepresentation toEntity(UserIdentityRequest userIdentityRequest);
+
+    default List<UserIdentityResponse> toDtoList(
+        List<UserRepresentation> userRepresentations
+    ){
+        return userRepresentations.stream()
+            .map(this::toDto)
+            .toList();
+    };
 }

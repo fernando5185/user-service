@@ -88,6 +88,22 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             "The email address provided is already registered in the system. Please use a different email address.");
     }
 
+    @ExceptionHandler (KeycloakAdminException.class)
+    public ResponseEntity<Object> handleKeycloakAdminException(KeycloakAdminException exception) {
+        return createProblemDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR, 
+            "Keycloak Admin Error",
+            "An error occurred while communicating with the Keycloak server. Please try again later.");
+    }
+
+    @ExceptionHandler (KeycloakUserAlreadyExistsException.class)
+    public ResponseEntity<Object> handleKeycloakUserAlreadyExistsException(KeycloakUserAlreadyExistsException exception) {
+        return createProblemDetail(
+            HttpStatus.CONFLICT, 
+            "Keycloak User Already Exists",
+            "The user already exists in the Keycloak server. Please use a different username or email.");
+    }
+
     @ExceptionHandler (UserNameAlreadyExistsException.class)
     public ResponseEntity<Object> handleUserNameAlreadyExistsException(UserNameAlreadyExistsException exception) {
         return createProblemDetail(
