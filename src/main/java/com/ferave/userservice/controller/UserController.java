@@ -1,6 +1,7 @@
 package com.ferave.userservice.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -70,6 +71,15 @@ public class UserController {
                 .created(location)
                 .body(created);
 
+    }
+
+    @GetMapping (path = "/identities")
+    @PreAuthorize ("hasRole('ADMIN')")
+    public ResponseEntity<List<UserIdentityResponse>> findAllUserIdentities() {
+        List<UserIdentityResponse> findAllIdentities = userIdentityProvider.usersIdentity();
+        return ResponseEntity
+                .ok()
+                .body(findAllIdentities);
     }
 
     @GetMapping
