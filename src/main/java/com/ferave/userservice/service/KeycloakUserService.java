@@ -32,7 +32,7 @@ public class KeycloakUserService {
         
         UserRepresentation userRepresentation = new UserRepresentation();
 
-        userRepresentation.setUsername(dto.userName());
+        userRepresentation.setUsername(dto.username());
         userRepresentation.setEmail(dto.email());
         userRepresentation.setEnabled(true);
 

@@ -6,7 +6,7 @@ public record UserResponseDto (
     
     UUID id,
     
-    String userName, 
+    String username, 
     
     String email,
 

@@ -10,9 +10,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    boolean existsByUserName(String username);
+    boolean existsByUsername(String username);
 
     boolean existsByEmailAndIdNot(String email, UUID id);
 
-    boolean existsByUserNameAndIdNot(String userName, UUID id);
+    boolean existsByUsernameAndIdNot(String username, UUID id);
 }

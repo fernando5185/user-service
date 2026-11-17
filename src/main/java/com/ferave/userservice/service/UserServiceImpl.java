@@ -47,14 +47,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUserName(UserUpdateDto userUpdateDto, User existingUser) {
-        if (userUpdateDto.userName() == null || 
-            Objects.equals(userUpdateDto.userName(), existingUser.getUserName())) {
+        if (userUpdateDto.username() == null || 
+            Objects.equals(userUpdateDto.username(), existingUser.getUsername())) {
         return;
         }
 
-        if (userRepository.existsByUserNameAndIdNot(userUpdateDto.userName(), existingUser.getId())) {
+        if (userRepository.existsByUsernameAndIdNot(userUpdateDto.username(), existingUser.getId())) {
             throw new UserNameAlreadyExistsException(
-                "Username " + userUpdateDto.userName() + " already exists"
+                "Username " + userUpdateDto.username() + " already exists"
             );
         }
     }
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        if (userRepository.existsByUserName(userRequestDto.userName())) {
+        if (userRepository.existsByUsername(userRequestDto.username())) {
             throw new UserNameAlreadyExistsException(
                 "Username already exists"
             );

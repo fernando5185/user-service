@@ -11,7 +11,7 @@ public record UserUpdateDto(
         message = "The name must have a valid format"
     )
     @Size (max = 50)
-    String userName, 
+    String username, 
     
     @Email 
     @Pattern ( 
