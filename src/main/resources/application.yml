@@ -12,10 +12,24 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+    baseline-on-migrate: false
+    baseline-version: 1
+    baseline-description: "Initial version"
+
+    validate-on-migrate: true
+    clean-disabled: true
+
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
 
   security:
     oauth2:
