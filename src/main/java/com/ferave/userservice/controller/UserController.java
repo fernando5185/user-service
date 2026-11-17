@@ -82,6 +82,24 @@ public class UserController {
                 .body(findAllIdentities);
     }
 
+    @GetMapping (path = "/identity/{id}")
+    @PreAuthorize ("hasRole('ADMIN')")
+    public ResponseEntity<UserIdentityResponse> findUserIdentityById(@PathVariable(name = "id") String keycloakId) {
+        UserIdentityResponse findIdentity = userIdentityProvider.getUserIdentityById(keycloakId);
+        return ResponseEntity
+                .ok()
+                .body(findIdentity);
+    }
+
+    @DeleteMapping (path = "/identity/{id}")
+    @PreAuthorize ("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUserIdentityById(@PathVariable(name = "id") String keycloakId) {
+        userIdentityProvider.deleteUserIdentityById(keycloakId);
+        return ResponseEntity
+                .noContent()
+                .build();
+    }
+
     @GetMapping
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponseDto>> findAllUsers(Pageable pageable){
