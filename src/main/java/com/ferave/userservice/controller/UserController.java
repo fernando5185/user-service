@@ -38,25 +38,10 @@ public class UserController {
         this.userIdentityProvider = userIdentityProvider;
     }
 
+    // Register user in the database
     @PostMapping (path = "/register")
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto created = userService.registerUser(userRequestDto);
-
-        URI location = ServletUriComponentsBuilder
-                            .fromCurrentRequest()
-                            .path("/{id}")
-                            .buildAndExpand(created.id())
-                            .toUri();
-
-        return ResponseEntity
-                .created(location)
-                .body(created);
-    }
-
-    @PostMapping
-    @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> saveUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto created = userService.saveUser(userRequestDto);
 
         URI location = ServletUriComponentsBuilder
@@ -70,6 +55,7 @@ public class UserController {
                 .body(created);
     }
 
+    // Save user identity in Keycloak
     @PostMapping (path = "/identity")
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> saveUserIdentity(@Valid @RequestBody UserRequestDto userRequestDto) {
@@ -87,6 +73,7 @@ public class UserController {
 
     }
 
+    // Get all user identities from Keycloak
     @GetMapping (path = "/identities")
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponseDto>> findAllUserIdentities() {
@@ -96,6 +83,7 @@ public class UserController {
                 .body(findAllIdentities);
     }
 
+    // Get user identity by ID from Keycloak
     @GetMapping (path = "/identity/{id}")
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> findUserIdentityById(@PathVariable(name = "id") String keycloakId) {
@@ -105,6 +93,7 @@ public class UserController {
                 .body(findIdentity);
     }
 
+    // Delete user identity by ID from Keycloak
     @DeleteMapping (path = "/identity/{id}")
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUserIdentityById(@PathVariable(name = "id") String keycloakId) {

@@ -1,11 +1,11 @@
-package com.ferave.userservice.exceptions;
+package com.ferave.userservice.exceptions.handler;
 
+import java.net.URI;
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -29,20 +29,43 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.ferave.userservice.exceptions.domain.EmailAlreadyExistsException;
+import com.ferave.userservice.exceptions.domain.ResourceNotFoundException;
+import com.ferave.userservice.exceptions.domain.UserCreateException;
+import com.ferave.userservice.exceptions.domain.UserNameAlreadyExistsException;
+import com.ferave.userservice.exceptions.integration.KeycloakIntegrationException;
+import com.ferave.userservice.exceptions.integration.KeycloakUserAlreadyExistsException;
+
 @RestControllerAdvice 
 public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> createProblemDetail(
         HttpStatusCode status,
         String title,
-        String detail
+        String detail,
+        String errorCode
     ) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
 
         problem.setTitle(title);
+        problem.setType(
+            URI.create("urn:error:" + errorCode.toLowerCase())
+        );
+        problem.setProperty("errorCode", errorCode);
         problem.setProperty("timestamp", Instant.now());
 
         return ResponseEntity.status(status).body(problem);
+    }
+
+    @ExceptionHandler (Exception.class)
+    public ResponseEntity<Object> handleUnexpectedException (Exception exception) {
+        return createProblemDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Unexpected Error",
+            exception.getMessage(),
+            "INTERNAL_SERVER_ERROR"
+            
+        );
     }
 
     @Override
@@ -59,16 +82,12 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
                     .add(error.getDefaultMessage())
         );
 
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.BAD_REQUEST,
-                "One or more validation errors occurred"
+        return ResponseEntity.badRequest().body(createProblemDetail(
+            status,
+            "Validation Failed",
+            ex.getMessage(),
+            "VALIDATION_FAILED")
         );
-
-        problemDetail.setTitle("Validation failed");
-        problemDetail.setProperty("timestamp", Instant.now());
-        problemDetail.setProperty("errors", errors);
-
-        return ResponseEntity.badRequest().body(problemDetail);
         
     }
 
@@ -77,39 +96,49 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.NOT_FOUND, 
             "Resource not Found", 
-            "The requested resource was not found. Check the information provided and try again.");
+            exception.getMessage(),
+            "RESOURCE_NOT_FOUND");
     }
 
     @ExceptionHandler (EmailAlreadyExistsException.class)
     public ResponseEntity<Object> handleAlreadyEmailExistsException(EmailAlreadyExistsException exception) {
         return createProblemDetail(
             HttpStatus.CONFLICT, 
-            "Already resource exists",
-            "The email address provided is already registered in the system. Please use a different email address.");
+            "The email address already exists",
+            exception.getMessage(), 
+            "EMAIL_ALREADY_EXISTS"
+    );
     }
 
-    @ExceptionHandler (KeycloakAdminException.class)
-    public ResponseEntity<Object> handleKeycloakAdminException(KeycloakAdminException exception) {
+    @ExceptionHandler (KeycloakIntegrationException .class)
+    public ResponseEntity<Object> handleKeycloakUserAlreadyExistsException(KeycloakIntegrationException exception) {
         return createProblemDetail(
             HttpStatus.INTERNAL_SERVER_ERROR, 
-            "Keycloak Admin Error",
-            "An error occurred while communicating with the Keycloak server. Please try again later.");
+            "An error occurred in Keycloak",
+            exception.getMessage(),
+            "KEYCLOAK_ERROR"
+        
+        );
     }
 
-    @ExceptionHandler (KeycloakUserAlreadyExistsException.class)
     public ResponseEntity<Object> handleKeycloakUserAlreadyExistsException(KeycloakUserAlreadyExistsException exception) {
         return createProblemDetail(
             HttpStatus.CONFLICT, 
-            "Keycloak User Already Exists",
-            "The user already exists in the Keycloak server. Please use a different username or email.");
+            "Keycloak User already exists",
+            exception.getMessage(),
+            "KEYCLOAK_USER_ALREADY_EXISTS"
+        
+        );
     }
 
     @ExceptionHandler (UserCreateException.class)
     public ResponseEntity<Object> handleUserCreateException(UserCreateException exception) {
         return createProblemDetail(
-            HttpStatus.INTERNAL_SERVER_ERROR, 
+            HttpStatus.BAD_REQUEST, 
             "User Creation Error",
-            "An error occurred while creating the user. Please try again later.");
+            exception.getMessage(),
+            "USER_CREATION_ERROR"
+        );
     }
 
     @ExceptionHandler (UserNameAlreadyExistsException.class)
@@ -117,7 +146,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.CONFLICT, 
             "Already resource exists",
-            "The username provided is already registered in the system. Please use a different username.");
+            exception.getMessage(),
+            "USERNAME_ALREADY_EXISTS"
+        );
     }
 
     @Override
@@ -130,7 +161,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.BAD_REQUEST, 
             "Invalid JSON or unreadable request body",
-            "The request body is missing, malformed, or contains invalid values.");
+            exception.getMessage(),
+            "INVALID_JSON_OR_UNREADABLE_REQUEST_BODY"
+        );
     }
 
     @Override
@@ -142,8 +175,10 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
 
         return createProblemDetail(
             HttpStatus.METHOD_NOT_ALLOWED, 
-            "Method Not Supported",
-            "The HTTP method is not supported for this endpoint.");
+            "Method Not Allowed",
+            exception.getMessage(),
+            "METHOD_NOT_ALLOWED"
+        );
     }
 
     @Override
@@ -156,7 +191,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.BAD_REQUEST, 
             "Missing Parameter",
-            "A required parameter is missing in the request. Check the required parameters and try again.");
+            exception.getMessage(),
+            "MISSING_PARAMETER"
+        );
     }
 
     @Override
@@ -169,7 +206,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.UNSUPPORTED_MEDIA_TYPE, 
             "Unsupported content type",
-            "The request Content-Type is not supported.");
+            exception.getMessage(),
+            "UNSUPPORTED_CONTENT_TYPE"
+        );
     }
 
     @Override
@@ -182,7 +221,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.INTERNAL_SERVER_ERROR, 
             "Parameter is missing",
-            "A required path variable is missing from the server configuration.");
+            exception.getMessage(),
+            "MISSING_PATH_VARIABLE"
+        );
     }
 
      @Override
@@ -195,7 +236,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.BAD_REQUEST, 
             "A parameter has the wrong type",
-            "One or more request parameters have an invalid value or type.");
+           exception.getMessage(),
+            "INVALID_PARAMETER_TYPE"
+        );
     }
 
     @Override
@@ -208,18 +251,21 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.NOT_ACCEPTABLE, 
             "An acceptable response for the client can't be produced.",
-            "No response format compatible with the content types accepted in the request was found.");
+            exception.getMessage(),
+            "NOT_ACCEPTABLE"
+        );
     }
 
     @ExceptionHandler (DataIntegrityViolationException.class)
     protected ResponseEntity<Object> handleDataIntegrityViolationException (
-        DataIntegrityViolationException exception,
-        Locale locale
+        DataIntegrityViolationException exception
     ) {
         return createProblemDetail(
             HttpStatus.CONFLICT,
             "The operation violates a data integrity constraint.",
-            HttpStatus.CONFLICT.getReasonPhrase());
+            exception.getMessage(),
+            "DATA_CONSTRAINT_VIOLATION"
+        );
     }
 
     @ExceptionHandler (AuthenticationException.class)
@@ -228,7 +274,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.UNAUTHORIZED, 
             "Authentication Failed",
-        "Authentication is required or the supplied credentials are invalid.");
+            exception.getMessage(),
+            "AUTHENTICATION_FAILED"
+        );
     }
 
     @ExceptionHandler (AccessDeniedException.class)
@@ -236,7 +284,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.FORBIDDEN, 
             "Access Denied",
-        "You do not have permission to access this resource.");
+            exception.getMessage(),
+            "ACCESS_DENIED"
+        );
     }
 
     @ExceptionHandler (InvalidBearerTokenException.class)
@@ -244,7 +294,9 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.UNAUTHORIZED, 
             "The Bearer token is not valid",
-            "The supplied access token is invalid or expired.");
+            exception.getMessage(),
+            "INVALID_BEARER_TOKEN"
+        );
     }
 
     @ExceptionHandler (InsufficientAuthenticationException.class)
@@ -252,6 +304,8 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
         return createProblemDetail(
             HttpStatus.UNAUTHORIZED, 
             "Authentication is insufficient to access the resource",
-            "The request requires valid authentication to access the requested resource. Check your credentials and try again.");
+            exception.getMessage(),
+            "INSUFFICIENT_AUTHENTICATION"
+        );
     }
 }

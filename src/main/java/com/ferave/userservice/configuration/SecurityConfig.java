@@ -13,7 +13,7 @@ import com.ferave.userservice.integration.keycloak.utils.KeycloakJwtAuthenticati
 
 import lombok.RequiredArgsConstructor;
 
-import com.ferave.userservice.security.CusomAuthenticationEntryPoint;
+import com.ferave.userservice.security.CustomAuthenticationEntryPoint;
 import com.ferave.userservice.security.CustomAccessDeniedHandler;
 
 @Configuration 
@@ -22,7 +22,7 @@ import com.ferave.userservice.security.CustomAccessDeniedHandler;
 @EnableMethodSecurity (prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
 
-    private final CusomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean

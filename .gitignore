@@ -38,3 +38,8 @@ keycloak-fix-service-account.sh
 
 # Variables de entorno
 .env
+
+# Images
+arquitectura _de_recuperación.png
+diagrama_de_compensación.png
+diagrama_principal_creación_de_usuario.png

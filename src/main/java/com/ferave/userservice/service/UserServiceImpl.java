@@ -12,11 +12,11 @@ import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
 import com.ferave.userservice.dto.UserUpdateDto;
 import com.ferave.userservice.entity.User;
-import com.ferave.userservice.exceptions.EmailAlreadyExistsException;
-import com.ferave.userservice.exceptions.KeycloakAdminException;
-import com.ferave.userservice.exceptions.ResourceNotFoundException;
-import com.ferave.userservice.exceptions.UserCreateException;
-import com.ferave.userservice.exceptions.UserNameAlreadyExistsException;
+import com.ferave.userservice.exceptions.domain.EmailAlreadyExistsException;
+import com.ferave.userservice.exceptions.domain.ResourceNotFoundException;
+import com.ferave.userservice.exceptions.domain.UserCreateException;
+import com.ferave.userservice.exceptions.domain.UserNameAlreadyExistsException;
+import com.ferave.userservice.exceptions.integration.KeycloakIntegrationException;
 import com.ferave.userservice.integration.port.UserIdentityProvider;
 import com.ferave.userservice.mapper.UserMapper;
 import com.ferave.userservice.repository.UserRepository;
@@ -27,14 +27,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final KeycloakUserService keycloakUserService;
     private final UserIdentityProvider userIdentityProvider;
 
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
-            KeycloakUserService keycloakUserService, UserIdentityProvider userIdentityProvider) {
+            UserIdentityProvider userIdentityProvider) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
-        this.keycloakUserService = keycloakUserService;
         this.userIdentityProvider = userIdentityProvider;
     }
 
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto registerUser(UserRequestDto userRequestDto) {
+    public UserResponseDto saveUser(UserRequestDto userRequestDto) {
 
         if (userRepository.existsByEmail(userRequestDto.email())){
             throw new EmailAlreadyExistsException(
@@ -86,7 +84,7 @@ public class UserServiceImpl implements UserService {
         try {
             response = userIdentityProvider.saveUserIdentity(userRequestDto);
         } catch (Exception e) {
-            throw new KeycloakAdminException("Failed to create user identity in Keycloak");
+            throw new KeycloakIntegrationException("Failed to create user identity in Keycloak", e); 
         }
 
         String keycloakId = response.keycloakId();
@@ -101,38 +99,11 @@ public class UserServiceImpl implements UserService {
             } catch (Exception comppensationException) {
                 e.addSuppressed(comppensationException);
             }
-            throw new UserCreateException("Failed to create user in the database");
+            throw new UserCreateException("Failed to create user in the database", e);
         }
         
         return userMapper.toDto(entity);
         
-    }
-
-    @Override
-    @Transactional 
-    public UserResponseDto saveUser(UserRequestDto userRequestDto) {
-
-        if (userRepository.existsByEmail(userRequestDto.email())){
-            throw new EmailAlreadyExistsException(
-                "Email already exists"
-            );
-        }
-
-        if (userRepository.existsByUsername(userRequestDto.username())) {
-            throw new UserNameAlreadyExistsException(
-                "Username already exists"
-            );
-        }
-
-        String keycloak_id = keycloakUserService.createUser(userRequestDto);
-        
-        User entity = userMapper.toEntity(userRequestDto);
-
-        entity.setKeycloakId(keycloak_id);
-        
-        User saveUser =userRepository.save(entity);
-        
-        return userMapper.toDto(saveUser);
     }
 
     @Override 

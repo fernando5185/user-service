@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
-import com.ferave.userservice.exceptions.KeycloakAdminException;
+import com.ferave.userservice.exceptions.integration.KeycloakIntegrationException;
 import com.ferave.userservice.integration.keycloak.mapper.KeycloakUserMapper;
 import com.ferave.userservice.integration.port.UserIdentityProvider;
 
@@ -57,7 +57,7 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
                     ? response.readEntity(String.class)
                     : "No response body";
 
-                throw new KeycloakAdminException(
+                throw new KeycloakIntegrationException(
                     "Keycloak returned status: " + status
                     + " - " + responseBody
                 );

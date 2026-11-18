@@ -16,12 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.MediaType;
 
 @Component
-public class CusomAuthenticationEntryPoint
+public class CustomAuthenticationEntryPoint
         implements AuthenticationEntryPoint {
 
     private final ObjectMapper objectMapper;
 
-    public CusomAuthenticationEntryPoint(ObjectMapper objectMapper) {
+    public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
