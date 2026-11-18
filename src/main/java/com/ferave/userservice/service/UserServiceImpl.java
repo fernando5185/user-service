@@ -62,6 +62,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // Register User in Database and Keycloak
     @Override
     public UserResponseDto saveUser(UserRequestDto userRequestDto) {
 
@@ -97,13 +98,37 @@ public class UserServiceImpl implements UserService {
             try {
                 userIdentityProvider.deleteUserIdentityById(keycloakId);
             } catch (Exception comppensationException) {
-                e.addSuppressed(comppensationException);
+                throw new KeycloakIntegrationException(comppensationException);
             }
             throw new UserCreateException("Failed to create user in the database", e);
         }
         
         return userMapper.toDto(entity);
         
+    }
+
+    // Register User in Database
+    @Override
+    @Transactional 
+    public UserResponseDto registerUser(UserRequestDto userRequestDto) {
+        
+        if (userRepository.existsByEmail(userRequestDto.email())){
+            throw new EmailAlreadyExistsException(
+                "Email already exists"
+            );
+        }
+
+        if (userRepository.existsByUsername(userRequestDto.username())) {
+            throw new UserNameAlreadyExistsException(
+                "Username already exists"
+            );
+        }
+
+        User entity = userMapper.toEntity(userRequestDto);
+
+        User savedUser = userRepository.save(entity);
+
+        return userMapper.toDto(savedUser);
     }
 
     @Override 

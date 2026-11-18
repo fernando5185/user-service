@@ -13,6 +13,8 @@ public interface UserService {
 
     UserResponseDto saveUser(UserRequestDto userRequestDto);
 
+    UserResponseDto registerUser(UserRequestDto userRequestDto);
+
     Page<UserResponseDto> users(Pageable pageable);
 
     UserResponseDto findUserById(UUID id);
