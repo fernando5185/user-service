@@ -2,16 +2,16 @@ package com.ferave.userservice.integration.port;
 
 import java.util.List;
 
-import com.ferave.userservice.integration.model.UserIdentityRequest;
-import com.ferave.userservice.integration.model.UserIdentityResponse;
+import com.ferave.userservice.dto.UserRequestDto;
+import com.ferave.userservice.dto.UserResponseDto;
 
 public interface UserIdentityProvider {
 
-    UserIdentityResponse saveUserIdentity(UserIdentityRequest userIdentityRequest);
+    UserResponseDto saveUserIdentity(UserRequestDto userIdentityRequest);
 
-    List<UserIdentityResponse> usersIdentity();
+    List<UserResponseDto> usersIdentity();
 
-    UserIdentityResponse getUserIdentityById(String keycloakId);
+    UserResponseDto getUserIdentityById(String keycloakId);
 
     void deleteUserIdentityById(String keycloakId);
 }

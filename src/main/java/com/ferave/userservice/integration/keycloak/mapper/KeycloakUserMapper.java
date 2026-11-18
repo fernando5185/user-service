@@ -8,8 +8,8 @@ import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
-import com.ferave.userservice.integration.model.UserIdentityRequest;
-import com.ferave.userservice.integration.model.UserIdentityResponse;
+import com.ferave.userservice.dto.UserRequestDto;
+import com.ferave.userservice.dto.UserResponseDto;
 
 @Mapper (componentModel = "spring", 
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
@@ -17,7 +17,9 @@ import com.ferave.userservice.integration.model.UserIdentityResponse;
 ) 
 public interface KeycloakUserMapper {
     
-    UserIdentityResponse toDto(UserRepresentation userRepresentation);
+    @Mapping (target = "id", ignore = true)
+    @Mapping (target = "keycloakId", source = "id")
+    UserResponseDto toDto(UserRepresentation userRepresentation);
 
     @Mapping (target = "id", ignore = true)
     @Mapping (target = "enabled", constant = "true")
@@ -47,9 +49,9 @@ public interface KeycloakUserMapper {
     @Mapping(target = "origin", ignore = true)
     @Mapping(target = "rawAttributes", ignore = true)
     @Mapping(target = "applicationRoles", ignore = true)
-    UserRepresentation toEntity(UserIdentityRequest userIdentityRequest);
+    UserRepresentation toEntity(UserRequestDto userIdentityRequest);
 
-    default List<UserIdentityResponse> toDtoList(
+    default List<UserResponseDto> toDtoList(
         List<UserRepresentation> userRepresentations
     ){
         return userRepresentations.stream()

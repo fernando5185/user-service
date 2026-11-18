@@ -9,12 +9,13 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.ferave.userservice.dto.UserRequestDto;
+import com.ferave.userservice.dto.UserResponseDto;
 import com.ferave.userservice.exceptions.KeycloakAdminException;
 import com.ferave.userservice.integration.keycloak.mapper.KeycloakUserMapper;
-import com.ferave.userservice.integration.model.UserIdentityRequest;
-import com.ferave.userservice.integration.model.UserIdentityResponse;
 import com.ferave.userservice.integration.port.UserIdentityProvider;
 
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 
 @Service 
@@ -36,7 +37,8 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
     private String realm;
 
     @Override
-    public UserIdentityResponse saveUserIdentity(UserIdentityRequest userIdentityRequest) {
+    @Transactional 
+    public UserResponseDto saveUserIdentity(UserRequestDto userIdentityRequest) {
         UserRepresentation userRepresentation = new UserRepresentation();
 
         userRepresentation.setUsername(userIdentityRequest.username());
@@ -70,18 +72,19 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
     }
 
     @Override
-    public UserIdentityResponse getUserIdentityById(String keycloakId) {
+    public UserResponseDto getUserIdentityById(String keycloakId) {
         UserRepresentation userRepresentation = userResource().get(keycloakId).toRepresentation();
         return userIdentityMapper.toDto(userRepresentation);
     }
 
     @Override
+    @Transactional 
     public void deleteUserIdentityById(String keycloakId) {
         userResource().get(keycloakId).remove();
     }
 
     @Override
-    public List<UserIdentityResponse> usersIdentity() {
+    public List<UserResponseDto> usersIdentity() {
         List<UserRepresentation> userRepresentations = userResource().list();
         return userIdentityMapper
             .toDtoList(userRepresentations);

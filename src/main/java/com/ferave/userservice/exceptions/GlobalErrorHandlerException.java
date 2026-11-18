@@ -104,6 +104,14 @@ public class GlobalErrorHandlerException extends ResponseEntityExceptionHandler 
             "The user already exists in the Keycloak server. Please use a different username or email.");
     }
 
+    @ExceptionHandler (UserCreateException.class)
+    public ResponseEntity<Object> handleUserCreateException(UserCreateException exception) {
+        return createProblemDetail(
+            HttpStatus.INTERNAL_SERVER_ERROR, 
+            "User Creation Error",
+            "An error occurred while creating the user. Please try again later.");
+    }
+
     @ExceptionHandler (UserNameAlreadyExistsException.class)
     public ResponseEntity<Object> handleUserNameAlreadyExistsException(UserNameAlreadyExistsException exception) {
         return createProblemDetail(

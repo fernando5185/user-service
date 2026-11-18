@@ -11,6 +11,8 @@ import com.ferave.userservice.dto.UserUpdateDto;
 
 public interface UserService {
 
+    UserResponseDto registerUser(UserRequestDto userRequestDto);    
+
     UserResponseDto saveUser(UserRequestDto userRequestDto);
 
     Page<UserResponseDto> users(Pageable pageable);

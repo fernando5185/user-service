@@ -21,8 +21,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.ferave.userservice.dto.UserRequestDto;
 import com.ferave.userservice.dto.UserResponseDto;
 import com.ferave.userservice.dto.UserUpdateDto;
-import com.ferave.userservice.integration.model.UserIdentityRequest;
-import com.ferave.userservice.integration.model.UserIdentityResponse;
 import com.ferave.userservice.integration.port.UserIdentityProvider;
 import com.ferave.userservice.service.UserService;
 
@@ -38,6 +36,22 @@ public class UserController {
     public UserController(UserService userService, UserIdentityProvider userIdentityProvider) {
         this.userService = userService;
         this.userIdentityProvider = userIdentityProvider;
+    }
+
+    @PostMapping (path = "/register")
+    @PreAuthorize ("hasRole('ADMIN')")
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        UserResponseDto created = userService.registerUser(userRequestDto);
+
+        URI location = ServletUriComponentsBuilder
+                            .fromCurrentRequest()
+                            .path("/{id}")
+                            .buildAndExpand(created.id())
+                            .toUri();
+
+        return ResponseEntity
+                .created(location)
+                .body(created);
     }
 
     @PostMapping
@@ -58,8 +72,8 @@ public class UserController {
 
     @PostMapping (path = "/identity")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserIdentityResponse> saveUserIdentity(@Valid @RequestBody UserIdentityRequest userIdentityRequest) {
-        UserIdentityResponse created = userIdentityProvider.saveUserIdentity(userIdentityRequest);
+    public ResponseEntity<UserResponseDto> saveUserIdentity(@Valid @RequestBody UserRequestDto userRequestDto) {
+        UserResponseDto created = userIdentityProvider.saveUserIdentity(userRequestDto);
 
         URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
@@ -75,8 +89,8 @@ public class UserController {
 
     @GetMapping (path = "/identities")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<List<UserIdentityResponse>> findAllUserIdentities() {
-        List<UserIdentityResponse> findAllIdentities = userIdentityProvider.usersIdentity();
+    public ResponseEntity<List<UserResponseDto>> findAllUserIdentities() {
+        List<UserResponseDto> findAllIdentities = userIdentityProvider.usersIdentity();
         return ResponseEntity
                 .ok()
                 .body(findAllIdentities);
@@ -84,8 +98,8 @@ public class UserController {
 
     @GetMapping (path = "/identity/{id}")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserIdentityResponse> findUserIdentityById(@PathVariable(name = "id") String keycloakId) {
-        UserIdentityResponse findIdentity = userIdentityProvider.getUserIdentityById(keycloakId);
+    public ResponseEntity<UserResponseDto> findUserIdentityById(@PathVariable(name = "id") String keycloakId) {
+        UserResponseDto findIdentity = userIdentityProvider.getUserIdentityById(keycloakId);
         return ResponseEntity
                 .ok()
                 .body(findIdentity);
