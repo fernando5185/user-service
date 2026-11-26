@@ -185,6 +185,17 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.10.5.0</version>
+
+				<configuration>
+					<effort>Max</effort>
+					<threshold>Medium</threshold>
+					<failOnError>false</failOnError>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
