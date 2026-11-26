@@ -21,11 +21,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.ferave.userservice.dto.UserResponseDto;
-import com.ferave.userservice.entity.User;
-import com.ferave.userservice.mapper.UserMapper;
-import com.ferave.userservice.repository.UserRepository;
-import com.ferave.userservice.service.UserServiceImpl;
+import com.ferave.userservice.user.dto.UserResponseDto;
+import com.ferave.userservice.user.entity.User;
+import com.ferave.userservice.user.mapper.UserMapper;
+import com.ferave.userservice.user.repository.UserRepository;
+import com.ferave.userservice.user.service.UserServiceImpl;
 
 @ExtendWith (MockitoExtension.class)
 class UserServiceImplTests {
