@@ -9,11 +9,11 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.ferave.userservice.identity.dto.UserIdentityRequestDto;
+import com.ferave.userservice.identity.dto.UserIdentityResponseDto;
 import com.ferave.userservice.identity.keycloak.mapper.KeycloakUserMapper;
 import com.ferave.userservice.identity.port.UserIdentityProvider;
 import com.ferave.userservice.shared.exceptions.integration.KeycloakIntegrationException;
-import com.ferave.userservice.user.dto.UserRequestDto;
-import com.ferave.userservice.user.dto.UserResponseDto;
 
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
@@ -38,7 +38,7 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
 
     @Override
     @Transactional 
-    public UserResponseDto saveUserIdentity(UserRequestDto userIdentityRequest) {
+    public UserIdentityResponseDto saveUserIdentity(UserIdentityRequestDto userIdentityRequest) {
         UserRepresentation userRepresentation = new UserRepresentation();
 
         userRepresentation.setUsername(userIdentityRequest.username());
@@ -72,7 +72,7 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
     }
 
     @Override
-    public UserResponseDto getUserIdentityById(String keycloakId) {
+    public UserIdentityResponseDto getUserIdentityById(String keycloakId) {
         UserRepresentation userRepresentation = userResource().get(keycloakId).toRepresentation();
         return userIdentityMapper.toDto(userRepresentation);
     }
@@ -84,7 +84,7 @@ public class KeycloakUserAdapter implements UserIdentityProvider {
     }
 
     @Override
-    public List<UserResponseDto> usersIdentity() {
+    public List<UserIdentityResponseDto> usersIdentity() {
         List<UserRepresentation> userRepresentations = userResource().list();
         return userIdentityMapper
             .toDtoList(userRepresentations);

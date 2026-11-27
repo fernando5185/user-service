@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ferave.userservice.identity.dto.UserIdentityRequestDto;
+import com.ferave.userservice.identity.dto.UserIdentityResponseDto;
 import com.ferave.userservice.identity.port.UserIdentityProvider;
 import com.ferave.userservice.user.dto.UserRequestDto;
 import com.ferave.userservice.user.dto.UserResponseDto;
@@ -39,6 +41,7 @@ public class UserController {
     }
 
     // Register user in the database
+    @PostMapping 
     @PreAuthorize ("hasRole('ADMIN')")
     public ResponseEntity<UserResponseDto> save(@Valid @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto created = userService.saveUser(userRequestDto);
@@ -57,13 +60,13 @@ public class UserController {
     // Save user identity in Keycloak
     @PostMapping (path = "/identity")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> saveUserIdentity(@Valid @RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto created = userIdentityProvider.saveUserIdentity(userRequestDto);
+    public ResponseEntity<UserIdentityResponseDto> saveUserIdentity(@Valid @RequestBody UserIdentityRequestDto userIdentityRequestDto) {
+        UserIdentityResponseDto created = userIdentityProvider.saveUserIdentity(userIdentityRequestDto);
 
         URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()
                             .path("/{id}")
-                            .buildAndExpand(created.id())
+                            .buildAndExpand(created.keycloakId())
                             .toUri();
 
         return ResponseEntity
@@ -75,8 +78,8 @@ public class UserController {
     // Get all user identities from Keycloak
     @GetMapping (path = "/identities")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponseDto>> findAllUserIdentities() {
-        List<UserResponseDto> findAllIdentities = userIdentityProvider.usersIdentity();
+    public ResponseEntity<List<UserIdentityResponseDto>> findAllUserIdentities() {
+        List<UserIdentityResponseDto> findAllIdentities = userIdentityProvider.usersIdentity();
         return ResponseEntity
                 .ok()
                 .body(findAllIdentities);
@@ -85,8 +88,8 @@ public class UserController {
     // Get user identity by ID from Keycloak
     @GetMapping (path = "/identity/{id}")
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> findUserIdentityById(@PathVariable(name = "id") String keycloakId) {
-        UserResponseDto findIdentity = userIdentityProvider.getUserIdentityById(keycloakId);
+    public ResponseEntity<UserIdentityResponseDto> findUserIdentityById(@PathVariable(name = "id") String keycloakId) {
+        UserIdentityResponseDto findIdentity = userIdentityProvider.getUserIdentityById(keycloakId);
         return ResponseEntity
                 .ok()
                 .body(findIdentity);
