@@ -38,28 +38,10 @@ public class UserController {
         this.userIdentityProvider = userIdentityProvider;
     }
 
-    // Register user in the database and Keycloak
-    @PostMapping (path = "/register")
+    // Register user in the database
     @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+    public ResponseEntity<UserResponseDto> save(@Valid @RequestBody UserRequestDto userRequestDto) {
         UserResponseDto created = userService.saveUser(userRequestDto);
-
-        URI location = ServletUriComponentsBuilder
-                            .fromCurrentRequest()
-                            .path("/{id}")
-                            .buildAndExpand(created.id())
-                            .toUri();
-
-        return ResponseEntity
-                .created(location)
-                .body(created);
-    }
-
-    // Register user in Database (PostgreSQL)
-    @PostMapping
-    @PreAuthorize ("hasRole('ADMIN')")
-    public ResponseEntity<UserResponseDto> savedUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        UserResponseDto created = userService.registerUser(userRequestDto);
 
         URI location = ServletUriComponentsBuilder
                             .fromCurrentRequest()

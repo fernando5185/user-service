@@ -1,4 +1,4 @@
-package com.ferave.user_service;
+package com.ferave.user_service.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +28,7 @@ import com.ferave.userservice.user.repository.UserRepository;
 import com.ferave.userservice.user.service.UserServiceImpl;
 
 @ExtendWith (MockitoExtension.class)
-class UserServiceImplTests {
+class UserServiceTest {
 
     @Mock 
     UserRepository userRepository;
